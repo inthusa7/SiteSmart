@@ -1,0 +1,51 @@
+<div class="login-container">
+  <div class="area">
+    <ul class="circles"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
+  </div>
+
+  <div class="login-box">
+    <h2>Technician Register</h2>
+    <p>Create your technician account</p>
+
+    <div class="text-success" *ngIf="successMessage">{{ successMessage }}</div>
+    <div class="text-danger" *ngIf="serverError">{{ serverError }}</div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="register()">
+      <div class="user-box">
+        <input type="text" formControlName="fullName" required>
+        <label>Full Name</label>
+      </div>
+      <div class="user-box">
+        <input type="email" formControlName="email" required>
+        <label>Email</label>
+      </div>
+      <div class="user-box">
+        <input type="tel" formControlName="phone" required maxlength="10">
+        <label>Phone</label>
+      </div>
+      <div class="user-box">
+        <input [type]="showPassword ? 'text' : 'password'" formControlName="password" (input)="updatePasswordStrength()" required>
+        <label>Password</label>
+        <span class="eye" (click)="showPassword = !showPassword"><i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i></span>
+      </div>
+
+      <div class="strength-bar">
+        <div [style.width.%]="passwordStrength" [ngClass]="{'bg-red-500': passwordStrength < 60, 'bg-yellow-500': passwordStrength >= 60 && passwordStrength < 100, 'bg-green-500': passwordStrength >= 100}"></div>
+      </div>
+
+      <div class="user-box">
+        <input type="password" formControlName="confirmPassword" required>
+        <label>Confirm Password</label>
+      </div>
+
+      <button type="submit" class="login-btn" [disabled]="loading || passwordStrength < 100">
+        <span></span><span></span><span></span><span></span>
+        {{ loading ? 'Creating...' : 'REGISTER' }}
+      </button>
+
+      <div class="signup">
+        Already a technician? <a routerLink="/technician/login">Login here</a>
+      </div>
+    </form>
+  </div>
+</div>

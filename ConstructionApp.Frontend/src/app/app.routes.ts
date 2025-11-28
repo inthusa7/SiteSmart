@@ -1,28 +1,34 @@
 // src/app/app.routes.ts
 import { Routes } from '@angular/router';
 
-// Existing imports (உங்க original)
+// Public Components
 import { HomeComponent } from './home/home';
 import { ServicesCatalogComponent } from './home/services-catalog.component';
+
+// Auth Components
 import { LoginComponent } from './auth/login.component';
 import { RegisterComponent } from './auth/register.component';
 import { VerifyComponent } from './auth/verify.component';
 import { ResendVerificationComponent } from './auth/resend-verification.component';
 import { ForgotPasswordComponent } from './auth/forgot-password.component';
 import { ResetPasswordComponent } from './auth/reset-password.component';
-import { AdminLayoutComponent } from './admin/admin-layout/admin.layout';
+import { AdminLoginComponent } from './auth/admin-login/admin.login';
+
+// Guards
 import { AdminGuard } from './shared/guards/admin.guard';
 import { AuthGuard } from './shared/guards/auth.guard';
+
+// Admin Components
+import { AdminLayoutComponent } from './admin/admin-layout/admin.layout';
 import { AdminDashboardComponent } from './admin/dashboard';
 import { ServicesManagementComponent } from './admin/service/services-management.component';
-import { AdminLoginComponent } from './auth/admin-login/admin.login';
 import { UsersComponent } from './admin/manage/users.component';
 import { AdminBookingsComponent } from './admin/booking/admin-bookings.component';
+
+// Customer Components
+import { CustomerDashboardComponent } from './customer/dashboard.component';
 import { ProfileComponent } from './customer/profile/profile.component';
 import { BookingComponent } from './customer/booking/booking.component';
-
-// NEW: Customer Dashboard Import (இதை மட்டும் add பண்ணுங்க)
-import { CustomerDashboardComponent } from './customer/dashboard.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -31,17 +37,19 @@ export const routes: Routes = [
   // Public services catalog
   { path: 'services', component: ServicesCatalogComponent },
 
-  // Auth routes
+  // Authentication
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'technician-register', component: RegisterComponent }, // same component
+  { path: 'technician-register', component: RegisterComponent },
   { path: 'verify/:token', component: VerifyComponent },
   { path: 'resend-verification', component: ResendVerificationComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'reset/:token', component: ResetPasswordComponent },
 
-  // Admin Login & Panel
+  // Admin Login
   { path: 'admin-login', component: AdminLoginComponent },
+
+  // Admin Protected Area
   {
     path: 'admin',
     component: AdminLayoutComponent,
@@ -55,24 +63,40 @@ export const routes: Routes = [
     ]
   },
 
-  // CUSTOMER PROTECTED AREA - இங்கதான் Dashboard add பண்ணினேன்
+  // Customer Protected Area
   {
     path: 'customer',
     canActivate: [AuthGuard],
     children: [
       { path: 'dashboard', component: CustomerDashboardComponent },
-      { path: 'booking', component: BookingComponent },   // இது புதுசா add ஆனது
+      { path: 'booking', component: BookingComponent },
       { path: 'profile', component: ProfileComponent },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }       // login பண்ணா direct dashboard வரும்
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },
 
-  // TECHNICIAN (இதுவும் வேணும்னா add பண்ணிக்கோங்க)
+  // Technician Public (Login, Register)
+  {
+    path: 'technician/login',
+    loadComponent: () =>
+      import('./auth/technician-login.component').then(m => m.TechnicianLoginComponent)
+  },
+  {
+    path: 'technician/register',
+    loadComponent: () =>
+      import('./auth/technician-register.component').then(m => m.TechnicianRegisterComponent)
+  },
+
+  // Technician Protected Area
   {
     path: 'technician',
     canActivate: [AuthGuard],
     children: [
-      { path: 'dashboard', component: CustomerDashboardComponent }, // இப்போ technician dashboard இல்லைனா இதை use பண்ணலாம் அல்லது மாத்திக்கோங்க
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./technician/dashboard.component').then(m => m.TechnicianDashboardComponent)
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },

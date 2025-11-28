@@ -1,0 +1,103 @@
+/* src/app/auth/register.component.css */
+.login-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Animated Background */
+.area, .circles, .circles li {
+  position: absolute; width: 100%; height: 100%; top: 0; left: 0; overflow: hidden; margin: 0; padding: 0;
+}
+.circles li {
+  list-style: none;
+  width: 20px; height: 20px;
+  background: rgba(59, 89, 255, 0.2);
+  animation: animate 25s linear infinite;
+  bottom: -150px;
+  border-radius: 50%;
+}
+.circles li:nth-child(1)  { left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
+.circles li:nth-child(2)  { left: 10%; width: 20px; height: 20px; animation-delay: 2s; }
+.circles li:nth-child(3)  { left: 70%; width: 20px; height: 20px; animation-delay: 4s; }
+.circles li:nth-child(4)  { left: 40%; width: 60px; height: 60px; animation-delay: 0s; }
+.circles li:nth-child(5)  { left: 65%; width: 20px; height: 20px; animation-delay: 0s; }
+.circles li:nth-child(6)  { left: 75%; width: 110px; height: 110px; animation-delay: 3s; }
+.circles li:nth-child(7)  { left: 35%; width: 150px; height: 150px; animation-delay: 7s; }
+.circles li:nth-child(8)  { left: 50%; width: 25px; height: 25px; animation-delay: 15s; }
+.circles li:nth-child(9)  { left: 20%; width: 15px; height: 15px; animation-delay: 2s; }
+.circles li:nth-child(10) { left: 85%; width: 150px; height: 150px; animation-delay: 0s; }
+@keyframes animate { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; } }
+
+/* Card - NOW BEAUTIFUL & GLOWING */
+.login-box {
+  position: relative;
+  width: 400px;
+  padding: 50px 40px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 2px solid rgba(59, 89, 255, 0.5);
+  box-shadow: 0 0 40px rgba(59, 89, 255, 0.4);
+  text-align: center;
+  color: white;
+}
+
+.login-box h2 {
+  font-size: 2.8rem;
+  background: linear-gradient(90deg, #00dbde, #3b59ff);
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 10px;
+}
+
+.login-box p { opacity: 0.9; margin-bottom: 30px; font-size: 1.1rem; }
+
+/* Floating Labels */
+.user-box { position: relative; margin: 35px 0; }
+.user-box input {
+  width: 100%; padding: 10px 0; font-size: 16px; color: #fff;
+  background: transparent; border: none; border-bottom: 2px solid #3b59ff; outline: none;
+}
+.user-box label {
+  position: absolute; top: 0; left: 0; padding: 10px 0; font-size: 16px;
+  color: #aaa; pointer-events: none; transition: .5s;
+}
+.user-box input:focus ~ label,
+.user-box input:valid ~ label {
+  top: -20px; left: 0; color: #00dbde; font-size: 12px; font-weight: bold;
+}
+
+.eye { position: absolute; right: 0; top: 12px; cursor: pointer; color: #3b59ff; font-size: 1.3rem; }
+
+/* Strength Bar */
+.strength-bar {
+  height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin: 10px 0 20px;
+}
+.strength-bar > div { height: 100%; transition: all 0.4s; }
+
+/* Error */
+.error-msg { color: #ff3366; font-size: 0.9rem; margin: -10px 0 15px 5px; text-align: left; }
+
+/* Button */
+.login-btn {
+  position: relative; padding: 14px 50px; background: transparent;
+  border: 2px solid #3b59ff; border-radius: 50px; color: white; font-weight: bold;
+  text-transform: uppercase; letter-spacing: 3px; cursor: pointer; overflow: hidden;
+  transition: .5s; margin-top: 20px;
+}
+.login-btn:hover { background: #3b59ff; box-shadow: 0 0 30px #3b59ff; }
+.login-btn span {
+  position: absolute; display: block; width: 0; height: 0; border-radius: 50%;
+  background: #3b59ff; transition: .6s; transform: translate(-50%, -50%); z-index: -1;
+}
+.login-btn:hover span { width: 400px; height: 400px; }
+
+/* Links */
+.signup a { color: #00dbde; font-weight: bold; text-decoration: none; }
+.signup a:hover { color: #00ffff; text-shadow: 0 0 10px cyan; }
