@@ -1,0 +1,53 @@
+
+<!-- src/app/admin/users/admin-tech-review.component.html -->
+<div class="review-page container">
+  <div class="top-row">
+    <button class="back" (click)="backToList()">← Back</button>
+    <h1>Review Technician Application</h1>
+  </div>
+
+  <div *ngIf="appLoading" class="loading">Loading application...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div *ngIf="!appLoading && application" class="card">
+    <div class="header">
+      <div class="avatar">
+        <img *ngIf="application.profileImage" [src]="application.profileImage" alt="profile" />
+        <div *ngIf="!application.profileImage" class="avatar-fallback">{{ application.fullName.slice(0,1) }}</div>
+      </div>
+      <div class="meta">
+        <h2>{{ application.fullName }}</h2>
+        <div class="sub">{{ application.email }} • {{ application.phone || '-' }}</div>
+        <div class="muted">Applied: {{ application.createdAt ? (application.createdAt | date:'medium') : '-' }}</div>
+        <div class="status">Status: <strong>{{ application.status || 'Pending' }}</strong></div>
+      </div>
+    </div>
+
+    <section class="bio" *ngIf="application.bio">
+      <h4>Bio / About</h4>
+      <p>{{ application.bio }}</p>
+    </section>
+
+    <section class="documents">
+      <h4>Submitted Documents</h4>
+      <div *ngIf="!application.documents || application.documents.length === 0" class="muted">No documents submitted.</div>
+      <ul>
+        <li *ngFor="let d of application.documents">
+          <span class="doc-name">{{ d.fileName }}</span>
+          <button class="btn-link" (click)="openDoc(d)">Open</button>
+          <a class="btn-link" [href]="d.url" target="_blank" download>Download</a>
+        </li>
+      </ul>
+    </section>
+
+    <section class="actions">
+      <div class="left">
+        <textarea [(ngModel)]="rejectReason" placeholder="Rejection reason (optional, explain why)" rows="3"></textarea>
+      </div>
+      <div class="right">
+        <button class="btn-approve" [disabled]="actionInProgress" (click)="approve()">Approve</button>
+        <button class="btn-reject" [disabled]="actionInProgress" (click)="reject()">Reject</button>
+      </div>
+    </section>
+  </div>
+</div>

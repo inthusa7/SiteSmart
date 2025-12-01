@@ -1,24 +1,128 @@
-/* src/app/admin/layout/admin-layout.component.css */
+/* ===========================
+   Admin Sidebar — Glass + Teal
+   (Drop-in replacement for admin-layout.component.css)
+   =========================== */
+
+:root{
+  --teal-50: #e6fffb;
+  --teal-100:#bff7ef;
+  --teal-300:#60e0d0;
+  --teal-500:#14b8a6; /* primary */
+  --teal-600:#0ea796;
+  --muted: #94a3b8;
+  --glass-bg: rgba(5,6,7,0.85);
+  --glass-border: rgba(20,184,166,0.10);
+  --radius: 14px;
+  --transition: 0.32s ease;
+}
+
+/* Optional subtle floating accents for the admin area (non-invasive) */
+.admin-wrapper {
+  position: relative;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* faint particle layer to match customer feel but teal-tinted */
+.admin-wrapper::before{
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 10% 80%, rgba(20,184,166,0.06) 0%, transparent 40%),
+    radial-gradient(circle at 80% 20%, rgba(20,184,166,0.05) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(20,184,166,0.03) 0%, transparent 50%);
+  pointer-events: none;
+  animation: admin-float 28s linear infinite;
+  z-index: 0;
+}
+@keyframes admin-float{
+  0% { transform: translateY(0) rotate(0); }
+  100% { transform: translateY(-60px) rotate(8deg); }
+}
+
+/* Sidebar container (glass + teal accents) */
+.sidebar {
+  width: 300px;
+  background: rgba(3, 7, 10, 0.92);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  padding: 28px 22px;
+  border-right: 1px solid rgba(20,184,166,0.05);
+  box-shadow: 0 0 30px rgba(16, 128, 117, 0.06);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: fixed;
+  height: 100vh;
+  z-index: 30;
+}
+
+/* Logo (teal gradient) */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--teal-100);
+  margin-bottom: 48px;
+  text-shadow: 0 0 14px rgba(20,184,166,0.12);
+}
+.logo-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #0fb39f, #2dd6c3);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 0 24px rgba(20,184,166,0.18);
+}
+
+/* Keep your original API (.nav-link) but upgrade to glass + teal */
 .nav-link {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 14px 20px;
+  padding: 14px 18px;
   border-radius: 12px;
-  color: #94a3b8;
+  color: var(--muted);
   font-weight: 500;
-  transition: all 0.3s ease;
+  transition: all var(--transition);
   position: relative;
   overflow: hidden;
+  text-decoration: none;
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+  border: 1px solid rgba(255,255,255,0.02);
+  z-index: 2;
 }
 
+/* Hover — glass tint + teal glow + sweep */
 .nav-link:hover {
-  background: linear-gradient(to right, rgba(20, 184, 166, 0.15), transparent);
+  background: linear-gradient(to right, rgba(20,184,166,0.12), rgba(20,184,166,0.03));
   color: white;
   padding-left: 28px;
+  box-shadow: 0 8px 26px rgba(20,184,166,0.18);
 }
 
-/* Green Line Effect */
+/* sweeping sheen (like customer .nav-item::before) but teal */
+.nav-link::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -120%;
+  width: 120%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+  transform: skewX(-12deg);
+  transition: left 0.9s cubic-bezier(.2,.9,.2,1);
+  pointer-events: none;
+}
+.nav-link:hover::after { left: 120%; }
+
+/* Teal left-line (keeps original style but animated) */
 .nav-link::before {
   content: '';
   position: absolute;
@@ -26,41 +130,141 @@
   top: 0;
   bottom: 0;
   width: 4px;
-  background: #14b8a6;
+  background: var(--teal-500);
   transform: scaleY(0);
-  transition: transform 0.3s ease;
+  transform-origin: top;
+  transition: transform 0.28s ease;
 }
 
-/* Active State – Exact உங்க Screenshot மாதிரி! */
+/* Active state — stronger glass + teal */
 .nav-link.active {
-  background: linear-gradient(to right, rgba(20, 184, 166, 0.25), rgba(20, 184, 166, 0.08));
-  color: #14b8a6;
+  background: linear-gradient(to right, rgba(20,184,166,0.20), rgba(20,184,166,0.06));
+  color: var(--teal-500);
   font-weight: 600;
-  border-left: 4px solid #14b8a6;
+  border-left: 4px solid var(--teal-500);
   padding-left: 24px;
+  box-shadow: 0 10px 30px rgba(20,184,166,0.26);
 }
+.nav-link.active::before { transform: scaleY(1); }
 
-.nav-link.active::before {
-  transform: scaleY(1);
-}
-
-/* Icon Color */
+/* Icon styling */
 .nav-link .icon {
   width: 20px;
   height: 20px;
-  color: #94a3b8;
-  transition: color 0.3s ease;
+  color: var(--muted);
+  transition: color var(--transition), transform var(--transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
-
 .nav-link:hover .icon,
 .nav-link.active .icon {
-  color: #14b8a6;
+  color: var(--teal-500);
+  transform: translateX(2px);
 }
 
-/* Logo Gradient */
-.bg-clip-text {
+/* User info block in the admin sidebar (teal variant of customer .user-info) */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: rgba(20,184,166,0.06);
+  border-radius: 14px;
+  border: 1px solid rgba(20,184,166,0.08);
+  backdrop-filter: blur(6px);
+}
+.user-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 3px solid var(--teal-500);
+  box-shadow: 0 0 20px rgba(20,184,166,0.12);
+}
+.user-name { font-weight: 700; color: white; }
+.user-email { font-size: 0.85rem; color: rgba(255,255,255,0.85); opacity: 0.95; }
+
+/* Admin main content area (pushes content to the right) */
+.main-content {
+  margin-left: 300px;
+  padding: 40px;
+  width: calc(100% - 300px);
+  position: relative;
+  z-index: 1;
+}
+
+/* Focus-visible for accessibility */
+.nav-link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(20,184,166,0.10), 0 8px 20px rgba(0,0,0,0.6);
+  border-radius: 10px;
+}
+
+/* Glass cards & buttons for admin (teal variants) */
+.glass-admin {
+  background: rgba(8, 10, 12, 0.75);
+  backdrop-filter: blur(18px);
+  border-radius: 20px;
+  border: 1px solid rgba(20,184,166,0.08);
+  padding: 26px;
+  margin: 20px 0;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 20px rgba(20,184,166,0.06);
+  position: relative;
+  overflow: hidden;
+}
+.glass-admin::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(20,184,166,0.03), transparent);
+  pointer-events: none;
+}
+
+/* Primary teal button */
+.btn-teal {
+  background: linear-gradient(135deg, #12b3a0, #2cd3c0);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 26px rgba(20,184,166,0.16);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.btn-teal:hover { transform: translateY(-3px); box-shadow: 0 16px 36px rgba(20,184,166,0.22); }
+
+/* Responsive: collapsed sidebar support (toggle .collapsed on .sidebar) */
+.sidebar.collapsed { width: 76px; padding: 18px 8px; }
+.sidebar.collapsed .logo { display: none; }
+.sidebar.collapsed .nav-link { justify-content: center; padding-left: 0; padding-right: 0; }
+.sidebar.collapsed .nav-link .icon { transform: none; }
+.sidebar.collapsed .nav-label { display: none; }
+
+/* Breakpoints */
+@media (max-width: 1024px){
+  .sidebar { width: 260px; }
+  .main-content { margin-left: 260px; width: calc(100% - 260px); }
+}
+@media (max-width: 768px){
+  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 220px; transform: translateX(0); z-index: 40; }
+  .main-content { margin-left: 220px; width: calc(100% - 220px); padding: 24px; }
+}
+@media (max-width: 480px){
+  .sidebar { width: 72px; padding: 12px; }
+  .main-content { margin-left: 72px; width: calc(100% - 72px); padding: 16px; }
+  .nav-link { padding: 10px; border-radius: 10px; }
+  .nav-label { display: none; }
+}
+
+/* Preserve your existing .bg-clip-text behaviour */
+.bg-clip-text{
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce){
+  .nav-link, .nav-link::after, .admin-wrapper::before { animation: none; transition: none; }
+}

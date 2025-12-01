@@ -1,0 +1,119 @@
+
+<!-- src/app/admin/users/admin-users.component.html -->
+<div class="users-page page-content">
+  <div class="header-grid container">
+    <div>
+      <h1 class="page-title">User Management</h1>
+      <p class="muted">Manage all customers, technicians and admins</p>
+    </div>
+
+    <div class="actions">
+      <div class="tabs">
+        <button
+          *ngFor="let t of tabs"
+          (click)="setTab(t.key)"
+          [class.active]="activeRole === t.key"
+          class="tab-btn">
+          {{ t.label }}
+        </button>
+      </div>
+
+      <div class="search-row">
+        <input
+          type="search"
+          [(ngModel)]="q"
+          (keyup.enter)="onSearchKey($event)"
+          placeholder="Search by name, email..."
+          class="search-input" />
+        <button class="search-go" (click)="onSearchKey()">
+          Search
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div *ngIf="loading" class="loading">Loading users...</div>
+    <div *ngIf="error" class="error">{{ error }}</div>
+
+    <div *ngIf="!loading && !error">
+      <div *ngIf="users.length === 0" class="empty">No users found.</div>
+
+      <div class="users-grid">
+        <div class="user-card" *ngFor="let u of users" (click)="openDetails(u)">
+          <div class="card-top">
+            <div class="avatar">
+              <span>{{ u.fullName.slice(0,1) }}</span>
+            </div>
+            <div class="meta">
+              <h3 class="name">{{ u.fullName }}</h3>
+              <div class="sub">{{ u.email }}</div>
+            </div>
+            <div class="role-pill">{{ u.role }}</div>
+          </div>
+
+          <div class="card-body">
+            <div class="row">
+              <div class="label">Status</div>
+              <div class="value">{{ u.status || '-' }}</div>
+            </div>
+            <div class="row">
+              <div class="label">Joined</div>
+              <div class="value">{{ fmt(u.createdAt) }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pager">
+        <button (click)="prevPage()" [disabled]="page<=1">Prev</button>
+        <div>Page {{page}} • {{ total }} users</div>
+        <button (click)="nextPage()" [disabled]="page*pageSize >= total">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Details Drawer -->
+  <div class="drawer" [class.open]="drawerOpen">
+    <div class="drawer-inner">
+      <button class="drawer-close" (click)="closeDrawer()">✕</button>
+
+      <div *ngIf="detailLoading" class="detail-loading">Loading...</div>
+
+      <div *ngIf="!detailLoading && selectedUser" class="detail-content">
+        <div class="detail-header">
+          <div class="avatar-large">
+            <span>{{ selectedUser.fullName.slice(0,1) }}</span>
+          </div>
+          <div>
+            <h2>{{ selectedUser.fullName }}</h2>
+            <div class="muted">{{ selectedUser.email }}</div>
+            <div class="muted">Role: {{ selectedUser.role }}</div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h4>Profile</h4>
+          <div class="field"><strong>Phone:</strong> {{ selectedUser.phone || '-' }}</div>
+          <div class="field"><strong>Status:</strong> {{ selectedUser.status || '-' }}</div>
+          <div class="field"><strong>Joined:</strong> {{ fmt(selectedUser.createdAt) }}</div>
+          <div class="field"><strong>Email verified:</strong> {{ selectedUser.emailConfirmed ? 'Yes' : 'No' }}</div>
+        </div>
+
+        <div *ngIf="selectedUser.technician" class="detail-section">
+          <h4>Technician Info</h4>
+          <div class="field"><strong>Verification:</strong> {{ selectedUser.technician.verificationStatus }}</div>
+          <div class="field"><strong>Experience:</strong> {{ selectedUser.technician.experienceYears ?? '-' }} yrs</div>
+          <div class="field"><strong>Rating:</strong> {{ selectedUser.technician.ratingAverage ?? '-' }}</div>
+        </div>
+
+        <div *ngIf="selectedUser.admin" class="detail-section">
+          <h4>Admin Info</h4>
+          <div class="field"><strong>Level:</strong> {{ selectedUser.admin.adminLevel }}</div>
+          <div class="field"><strong>Can manage users:</strong> {{ selectedUser.admin.canManageUsers ? 'Yes' : 'No' }}</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

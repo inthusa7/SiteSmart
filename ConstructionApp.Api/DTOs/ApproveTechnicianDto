@@ -1,0 +1,12 @@
+
+namespace ConstructionApp.Api.DTOs
+{
+    public class ApproveTechnicianDto
+    {
+        // Optional admin note to store in audit or send in email
+        public string? Note { get; set; }
+
+        // Optionally set verifiedAt from admin (server can override)
+        public DateTime? VerifiedAt { get; set; }
+    }
+}

@@ -105,7 +105,7 @@ export class CustomerDashboardComponent implements OnInit {
         this.bookingHistory = res.history || [];
         this.loading = false;
       },
-      error: (err) => {
+      error: (err) => {  
         console.warn('Dashboard failed, showing mock data...', err);
    //   this.loadMockData(); // Development-க்கு மட்டும்
         this.loading = false;

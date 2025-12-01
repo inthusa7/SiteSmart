@@ -22,7 +22,7 @@ import { AuthGuard } from './shared/guards/auth.guard';
 import { AdminLayoutComponent } from './admin/admin-layout/admin.layout';
 import { AdminDashboardComponent } from './admin/dashboard';
 import { ServicesManagementComponent } from './admin/service/services-management.component';
-import { UsersComponent } from './admin/manage/users.component';
+import { AdminUsersComponent } from './admin/users/admin-users.component';
 import { AdminBookingsComponent } from './admin/booking/admin-bookings.component';
 
 // Customer Components
@@ -57,7 +57,7 @@ export const routes: Routes = [
     children: [
       { path: 'dashboard', component: AdminDashboardComponent },
       { path: 'service', component: ServicesManagementComponent },
-      { path: 'manage/users', component: UsersComponent },
+      { path: 'users', component: AdminUsersComponent },
       { path: 'booking', component: AdminBookingsComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
