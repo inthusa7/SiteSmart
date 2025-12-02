@@ -134,16 +134,18 @@
 
 /* User Info */
 .user-info {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 18px;
-  background: rgba(138, 91, 255, 0.15);
-  border-radius: 18px;
-  border: 1px solid rgba(138, 91, 255, 0.2);
-  backdrop-filter: blur(10px);
+  position: relative;
+  margin-top: auto;
+  padding: 2px 20px;                    /* Compact & perfect */
+  background: linear-gradient(135deg, 
+              rgba(139, 92, 246, 0.25) 0%, 
+              rgba(124, 58, 237, 0.15) 100%);
+  border-radius: 20px;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.15);
+  transition: all 0.4s ease;
 }
-
 .user-avatar {
   width: 52px;
   height: 52px;

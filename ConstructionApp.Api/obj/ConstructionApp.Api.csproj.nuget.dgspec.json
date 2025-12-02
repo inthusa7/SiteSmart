@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Sutharsy\\Desktop\\Site_smart\\ConstructionApp.Api\\ConstructionApp.Api.csproj": {}
+    "C:\\Users\\Sutharsy\\Desktop\\SiteSmart\\ConstructionApp.Api\\ConstructionApp.Api.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Sutharsy\\Desktop\\Site_smart\\ConstructionApp.Api\\ConstructionApp.Api.csproj": {
+    "C:\\Users\\Sutharsy\\Desktop\\SiteSmart\\ConstructionApp.Api\\ConstructionApp.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Sutharsy\\Desktop\\Site_smart\\ConstructionApp.Api\\ConstructionApp.Api.csproj",
+        "projectUniqueName": "C:\\Users\\Sutharsy\\Desktop\\SiteSmart\\ConstructionApp.Api\\ConstructionApp.Api.csproj",
         "projectName": "ConstructionApp.Api",
-        "projectPath": "C:\\Users\\Sutharsy\\Desktop\\Site_smart\\ConstructionApp.Api\\ConstructionApp.Api.csproj",
+        "projectPath": "C:\\Users\\Sutharsy\\Desktop\\SiteSmart\\ConstructionApp.Api\\ConstructionApp.Api.csproj",
         "packagesPath": "C:\\Users\\Sutharsy\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Sutharsy\\Desktop\\Site_smart\\ConstructionApp.Api\\obj\\",
+        "outputPath": "C:\\Users\\Sutharsy\\Desktop\\SiteSmart\\ConstructionApp.Api\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

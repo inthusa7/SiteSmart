@@ -1,11 +1,13 @@
 // src/app/customer/profile/profile.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../shared/services/auth.service';
 import { LucideAngularModule } from 'lucide-angular';
 import { environment } from '../../../environments/environment';
+import { Subscription, forkJoin } from 'rxjs';
+import { Router } from '@angular/router';
 
 declare const cloudinary: any;
 
@@ -26,28 +28,17 @@ interface Address {
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
 })
-export class ProfileComponent implements OnInit {
-  user = { 
-    name: '', 
-    email: '', 
-    phone: '', 
-    avatar: '' 
-  };
-
+export class ProfileComponent implements OnInit, OnDestroy {
+  user = { name: '', email: '', phone: '', avatar: '' };
   addresses: Address[] = [];
+  notifications = { bookingConfirmation: true, statusUpdates: true, offers: false };
+
   isLoading = true;
   showAddForm = false;
   isEditMode = false;
   currentEditId = 0;
 
-  // NOTIFICATIONS PROPERTY - HTML-ல use ஆகுது
-  notifications = {
-    bookingConfirmation: true,
-    statusUpdates: true,
-    offers: false
-  };
-
-  newAddress: any = {
+  newAddress: Partial<Address> = {
     street: '',
     city: '',
     state: '',
@@ -56,7 +47,8 @@ export class ProfileComponent implements OnInit {
     isDefault: false
   };
 
-  private apiUrl = environment.apiBaseUrl;
+  private apiUrl = environment.apiBaseUrl.replace(/\/$/, '');
+  private subs = new Subscription();
 
   private cloudinaryConfig = {
     cloud_name: 'dxbhnpgd4',
@@ -64,196 +56,199 @@ export class ProfileComponent implements OnInit {
     folder: 'constructpro/profiles',
     cropping: true,
     multiple: false,
-    sources: ['local', 'camera']
+    sources: ['local', 'camera'],
+    client_allowed_formats: ['png', 'jpg', 'jpeg', 'webp']
   };
 
   constructor(
     private http: HttpClient,
-    private auth: AuthService
+    private auth: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.loadProfile();
-    this.loadAddresses();
+    this.loadAllData();
   }
 
-  // IMAGE ERROR FALLBACK METHOD - HTML-ல (error) use ஆகுது
-  onImgError(event: any) {
-    event.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(this.user.name || 'User')}&background=8b5cf6&color=fff&bold=true&size=256`;
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
   }
 
-  loadProfile() {
+  private getHeaders(): HttpHeaders {
     const token = this.auth.getToken();
-    if (!token || !this.auth.isLoggedIn()) {
-      alert('Session expired! Redirecting to login...');
+    return token ? new HttpHeaders().set('Authorization', `Bearer ${token}`) : new HttpHeaders();
+  }
+
+  private loadAllData(): void {
+    if (!this.auth.isLoggedIn()) {
+      alert('Session expired! Please login again.');
       this.auth.logout();
       return;
     }
 
-    this.http.get<any>(`${this.apiUrl}/customer/profile`, {
-      headers: { Authorization: `Bearer ${token}` }
-    }).subscribe({
-      next: (res) => {
-        if (res.success && res.data) {
-          this.user = {
-            name: res.data.fullName || '',
-            email: res.data.email || '',
-            phone: res.data.phone || '',
-            avatar: res.data.profileImage || ''
-          };
+    const token = this.auth.getToken();
+    if (!token) {
+      this.router.navigate(['/login']);
+      return;
+    }
 
-          if (!this.user.avatar) {
-            this.user.avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(this.user.name)}&background=8b5cf6&color=fff&bold=true&size=200`;
+    this.isLoading = true;
+    const headers = this.getHeaders();
+
+    // Load Profile + Addresses in parallel (Super Fast!)
+    const profile$ = this.http.get<any>(`${this.apiUrl}/customer/profile`, { headers });
+    const addresses$ = this.http.get<any>(`${this.apiUrl}/addresses/my`, { headers });
+
+    this.subs.add(
+      forkJoin([profile$, addresses$]).subscribe({
+        next: ([profileRes, addressRes]) => {
+          // Profile
+          if (profileRes?.success && profileRes?.data) {
+            const data = profileRes.data;
+            this.user = {
+              name: data.fullName || data.name || 'User',
+              email: data.email || '',
+              phone: data.phone || '',
+              avatar: data.profileImage || this.getDefaultAvatar(data.fullName || 'User')
+            };
+            localStorage.setItem('userName', this.user.name);
+            localStorage.setItem('userEmail', this.user.email);
           }
 
-          localStorage.setItem('userName', this.user.name);
-          localStorage.setItem('userEmail', this.user.email);
+          // Addresses - Only THIS user's addresses!
+          const rawAddresses = this.normalizeAddressResponse(addressRes);
+          this.addresses = rawAddresses.map((a: any) => ({
+            addressID: a.addressID || a.AddressID || a.id || 0,
+            street: a.street || '',
+            city: a.city || '',
+            state: a.state || '',
+            postalCode: a.postalCode || '',
+            country: a.country || 'Sri Lanka',
+            isDefault: !!a.isDefault || !!a.IsDefault
+          })).filter(a => a.addressID > 0 && a.street.trim());
+
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Profile/Address load failed:', err);
+          this.loadFromLocalStorage();
+          this.isLoading = false;
         }
-      },
-      error: () => {
-        this.user.name = localStorage.getItem('userName') || '';
-        this.user.email = localStorage.getItem('userEmail') || '';
-      }
-    });
+      })
+    );
   }
-loadAddresses() {
-  const token = this.auth.getToken();
-  if (!token) return;
 
-  this.isLoading = true;
+  private normalizeAddressResponse(res: any): any[] {
+    if (Array.isArray(res)) return res;
+    if (res?.data && Array.isArray(res.data)) return res.data;
+    if (res?.addresses && Array.isArray(res.addresses)) return res.addresses;
+    return [];
+  }
 
-  this.http.get<any>(`${this.apiUrl}/addresses/my`, {
-    headers: { Authorization: `Bearer ${token}` }
-  }).subscribe({
-    next: (res) => {
-      // இதுதான் முக்கியம்! Postman-ல வர response structure பாரு
-      let data = [];
+  private getDefaultAvatar(name: string = 'User'): string {
+    const encoded = encodeURIComponent(name.trim() || 'User');
+    return `https://ui-avatars.com/api/?name=${encoded}&background=8b5cf6&color=fff&bold=true&size=256&rounded=true`;
+  }
 
-      if (Array.isArray(res)) {
-        data = res;
-      } else if (res.data && Array.isArray(res.data)) {
-        data = res.data;
-      } else if (res.addresses && Array.isArray(res.addresses)) {
-        data = res.addresses;
-      } else {
-        console.warn('Unexpected response format:', res);
-        data = [];
-      }
+  private loadFromLocalStorage(): void {
+    this.user.name = localStorage.getItem('userName') || 'User';
+    this.user.email = localStorage.getItem('userEmail') || '';
+    this.user.avatar = this.getDefaultAvatar(this.user.name);
+  }
 
-      this.addresses = data.map((a: any) => ({
-        addressID: a.addressID ?? a.AddressID ?? a.id ?? 0,
-        street: a.street ?? a.Street ?? '',
-        city: a.city ?? a.City ?? '',
-        state: a.state ?? a.State ?? '',
-        postalCode: a.postalCode ?? a.PostalCode ?? '',
-        country: a.country ?? a.Country ?? 'Sri Lanka',
-        isDefault: a.isDefault ?? a.IsDefault ?? false
-      }));
+  onImgError(event: any): void {
+    event.target.src = this.getDefaultAvatar(this.user.name);
+  }
 
-      console.log('Loaded addresses:', this.addresses); // ← Console-ல பாரு!
-      this.isLoading = false;
-    },
-    error: (err) => {
-      console.error('Load addresses error:', err);
-      this.isLoading = false;
-      alert('Failed to load addresses: ' + (err.error?.message || err.message));
-    }
-  });
-}
-  openAddForm() {
+  openAddForm(): void {
     this.isEditMode = false;
     this.resetForm();
     this.showAddForm = true;
   }
 
-  openEditModal(addr: Address) {
+  openEditModal(addr: Address): void {
     this.isEditMode = true;
     this.currentEditId = addr.addressID;
     this.newAddress = { ...addr };
     this.showAddForm = true;
   }
 
- saveAddress() {
-  // Required fields check
-  if (!this.newAddress.street?.trim() || 
-      !this.newAddress.city?.trim() || 
-      !this.newAddress.postalCode?.trim()) {
-    alert('Please fill all required fields: Street, City & Postal Code!');
-    return;
-  }
-
-  const token = this.auth.getToken();
-  if (!token) {
-    alert('Session expired! Please login again.');
-    this.auth.logout();
-    return;
-  }
-
-  // Clean payload - C# model-க்கு exact match!
-  const payload = {
-    street: this.newAddress.street.trim(),
-    city: this.newAddress.city.trim(),
-    state: this.newAddress.state?.trim() || null,
-    postalCode: this.newAddress.postalCode.trim(),
-    country: this.newAddress.country || 'Sri Lanka',
-    isDefault: !!this.newAddress.isDefault
-  };
-
-  const url = this.isEditMode
-    ? `${this.apiUrl}/addresses/${this.currentEditId}`
-    : `${this.apiUrl}/addresses`;
-
-  const request = this.isEditMode 
-    ? this.http.put<any>(url, payload, { headers: { Authorization: `Bearer ${token}` } })
-    : this.http.post<any>(url, payload, { headers: { Authorization: `Bearer ${token}` } });
-
-  request.subscribe({
-    next: (response) => {
-      console.log('Address saved successfully:', response);
-      alert(this.isEditMode ? 'Address updated successfully!' : 'New address added!');
-      this.showAddForm = false;
-      this.resetForm();
-      this.loadAddresses(); // Refresh list
-    },
-    error: (err) => {
-      console.error('Save address failed:', err);
-      const msg = err.error?.message || err.error?.title || err.message || 'Unknown error';
-      alert('Failed to save address: ' + msg);
+  saveAddress(): void {
+    if (!this.newAddress.street?.trim() || !this.newAddress.city?.trim() || !this.newAddress.postalCode?.trim()) {
+      alert('Please fill Street, City & Postal Code!');
+      return;
     }
-  });
-}
-  setDefaultAddress(id: number) {
-    const token = this.auth.getToken();
-    this.http.patch(`${this.apiUrl}/addresses/${id}/default`, {}, {
-      headers: { Authorization: `Bearer ${token}` }
-    }).subscribe(() => this.loadAddresses());
-  }
 
-  deleteAddress(id: number) {
-    if (!confirm('Delete this address?')) return;
-    const token = this.auth.getToken();
-    this.http.delete(`${this.apiUrl}/addresses/${id}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    }).subscribe(() => {
-      this.addresses = this.addresses.filter(a => a.addressID !== id);
+    const payload = {
+      street: this.newAddress.street!.trim(),
+      city: this.newAddress.city!.trim(),
+      state: this.newAddress.state?.trim() || null,
+      postalCode: this.newAddress.postalCode!.trim(),
+      country: this.newAddress.country || 'Sri Lanka',
+      isDefault: !!this.newAddress.isDefault
+    };
+
+    const url = this.isEditMode
+      ? `${this.apiUrl}/addresses/${this.currentEditId}`
+      : `${this.apiUrl}/addresses`;
+
+    const request = this.isEditMode
+      ? this.http.put(url, payload, { headers: this.getHeaders() })
+      : this.http.post(url, payload, { headers: this.getHeaders() });
+
+    request.subscribe({
+      next: () => {
+        alert(this.isEditMode ? 'Address updated!' : 'Address added!');
+        this.showAddForm = false;
+        this.loadAllData();
+      },
+      error: (err) => alert('Save failed: ' + (err.error?.message || 'Try again'))
     });
   }
 
-  resetForm() {
+  setDefaultAddress(id: number): void {
+    this.http.patch(`${this.apiUrl}/addresses/${id}/default`, {}, {
+      headers: this.getHeaders()
+    }).subscribe({
+      next: () => this.loadAllData(),
+      error: () => alert('Failed to set default')
+    });
+  }
+
+  deleteAddress(id: number): void {
+    if (!confirm('Delete this address permanently?')) return;
+
+    this.http.delete(`${this.apiUrl}/addresses/${id}`, {
+      headers: this.getHeaders()
+    }).subscribe({
+      next: () => {
+        this.addresses = this.addresses.filter(a => a.addressID !== id);
+        alert('Address deleted!');
+      },
+      error: () => alert('Delete failed')
+    });
+  }
+
+  resetForm(): void {
     this.newAddress = {
-      street: '', city: '', state: '', postalCode: '', country: 'Sri Lanka', isDefault: false
+      street: '',
+      city: '',
+      state: '',
+      postalCode: '',
+      country: 'Sri Lanka',
+      isDefault: false
     };
   }
 
-  changeProfileImage() {
+  changeProfileImage(): void {
     if (typeof cloudinary === 'undefined') {
-      alert('Cloudinary not loaded! Check internet connection.');
+      alert('Image upload not available. Please try again later.');
       return;
     }
 
     cloudinary.openUploadWidget(this.cloudinaryConfig, (error: any, result: any) => {
       if (error) {
-        console.error('Upload error:', error);
+        console.error('Cloudinary error:', error);
         return;
       }
       if (result?.event === 'success') {
@@ -264,38 +259,34 @@ loadAddresses() {
     });
   }
 
-  private saveProfileImage(url: string) {
-    const token = this.auth.getToken();
-    if (!token) return;
-
-    this.http.patch(
-      `${this.apiUrl}/customer/profile/image`,
-      { profileImage: url },
-      { headers: { Authorization: `Bearer ${token}` } }
-    ).subscribe({
-      next: () => console.log('Photo saved!'),
-      error: () => alert('Photo uploaded but save failed. Click Save All Changes.')
+  private saveProfileImage(url: string): void {
+    this.http.patch(`${this.apiUrl}/customer/profile/image`, { profileImage: url }, {
+      headers: this.getHeaders()
+    }).subscribe({
+      next: () => console.log('Profile image updated'),
+      error: () => alert('Image save failed')
     });
   }
 
-  saveProfile() {
-    const token = this.auth.getToken();
-    if (!token) return;
-
+  saveProfile(): void {
     const payload = {
-      fullName: this.user.name,
-      phone: this.user.phone,
+      fullName: this.user.name.trim(),
+      phone: this.user.phone.trim(),
       profileImage: this.user.avatar
     };
 
     this.http.put(`${this.apiUrl}/customer/profile`, payload, {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: this.getHeaders()
     }).subscribe({
       next: () => {
-        alert('All changes saved successfully!');
+        alert('Profile updated successfully!');
         localStorage.setItem('userName', this.user.name);
       },
-      error: () => alert('Save failed!')
+      error: () => alert('Update failed! Try again.')
     });
+  }
+
+  goToDashboard(): void {
+    this.router.navigate(['/customer/dashboard']);
   }
 }

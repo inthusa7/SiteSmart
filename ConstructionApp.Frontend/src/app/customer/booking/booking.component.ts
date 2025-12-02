@@ -26,6 +26,18 @@ interface CalendarDay {
   selected?: boolean;
 }
 
+interface Address {
+  addressID?: number;
+  AddressID?: number;
+  street: string;
+  city: string;
+  state?: string;
+  postalCode: string;
+  country?: string;
+  isDefault?: boolean;
+  IsDefault?: boolean;
+}
+
 @Component({
   selector: 'app-booking',
   standalone: true,
@@ -34,17 +46,28 @@ interface CalendarDay {
   styleUrls: ['./booking.component.css']
 })
 export class BookingComponent implements OnInit {
-  step = 1;
+  step: number = 1;
   services: ServiceDto[] = [];
   cart: CartItem[] = [];
   selectedDate = '';
   selectedTime = '';
+  customerAddress: Address | null = null;
+
+  // SUCCESS SCREEN REAL DATA
+  bookingSummary: CartItem[] = [];
+  confirmedDate = '';
+  confirmedTime = '';
+  confirmedTotal = 0;
+
   isLoading = true;
+  addressLoading = true;
   error = '';
 
-  currentMonth: string = '';
-  currentYear: number = 0;
-  currentMonthIndex: number = 0;
+  // Calendar
+  currentMonth = '';
+  currentYear = 0;
+  currentMonthIndex = 0;
+  calendarDays: CalendarDay[] = [];
 
   timeSlots: string[] = [
     '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
@@ -52,7 +75,6 @@ export class BookingComponent implements OnInit {
     '05:00 PM', '06:00 PM'
   ];
 
-  calendarDays: CalendarDay[] = [];
   private apiUrl = (environment.apiBaseUrl || '').replace(/\/$/, '');
 
   constructor(
@@ -62,12 +84,13 @@ export class BookingComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.setCurrentMonth();
+    this.initCalendar();
     this.loadServices();
+    this.loadCustomerAddress();
   }
 
   // ====================== CALENDAR ======================
-  private setCurrentMonth(): void {
+  private initCalendar(): void {
     const today = new Date();
     this.currentYear = today.getFullYear();
     this.currentMonthIndex = today.getMonth();
@@ -82,9 +105,11 @@ export class BookingComponent implements OnInit {
     today.setHours(0, 0, 0, 0);
 
     this.calendarDays = [];
+
     for (let i = 0; i < firstDay; i++) {
       this.calendarDays.push({ day: '', disabled: true });
     }
+
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(this.currentYear, this.currentMonthIndex, day);
       date.setHours(0, 0, 0, 0);
@@ -123,12 +148,10 @@ export class BookingComponent implements OnInit {
     this.selectedDate = `${day.day} ${this.currentMonth} ${this.currentYear}`;
   }
 
-  // ====================== AUTH & SERVICES ======================
+  // ====================== API ======================
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('authToken');
-    let headers = new HttpHeaders();
-    if (token) headers = headers.set('Authorization', `Bearer ${token}`);
-    return headers;
+    return token ? new HttpHeaders().set('Authorization', `Bearer ${token}`) : new HttpHeaders();
   }
 
   loadServices(): void {
@@ -146,8 +169,24 @@ export class BookingComponent implements OnInit {
       });
   }
 
-  getImageUrl(service: ServiceDto): string {
-    if (!service.imageUrl) return '';
+  loadCustomerAddress(): void {
+    this.addressLoading = true;
+    this.http.get<any>(`${this.apiUrl}/addresses/my`, { headers: this.getAuthHeaders() })
+      .subscribe({
+        next: (res) => {
+          const addresses = Array.isArray(res) ? res : res.data || res.addresses || [];
+          this.customerAddress = addresses.find((a: any) => a.isDefault || a.IsDefault) || addresses[0] || null;
+          this.addressLoading = false;
+        },
+        error: () => {
+          this.customerAddress = null;
+          this.addressLoading = false;
+        }
+      });
+  }
+
+  getImageUrl(service: ServiceDto): string | null {
+    if (!service.imageUrl) return null;
     if (service.imageUrl.startsWith('http')) return service.imageUrl;
     const base = this.apiUrl.replace(/\/api$/, '');
     const path = service.imageUrl.startsWith('/') ? service.imageUrl : `/uploads/${service.imageUrl}`;
@@ -164,8 +203,8 @@ export class BookingComponent implements OnInit {
   }
 
   addToCart(service: ServiceDto): void {
-    const item = this.getCartItem(service.serviceID);
-    if (item) item.quantity++;
+    const existing = this.getCartItem(service.serviceID);
+    if (existing) existing.quantity++;
     else this.cart.push({ service, quantity: 1 });
   }
 
@@ -194,98 +233,97 @@ export class BookingComponent implements OnInit {
 
   goToSchedule(): void {
     if (this.cart.length === 0) {
-      alert('Please add at least one service!');
+      alert('Please select at least one service!');
       return;
     }
     this.step = 2;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // ====================== BOOKING LOGIC ======================
-  initiatePayment(): void {
+  // ====================== BOOKING ======================
+  initiateBooking(): void {
     if (!this.selectedDate || !this.selectedTime) {
       alert('Please select date and time!');
       return;
     }
-    this.saveBookingAndGoToDashboard();
-  }
-
-  private saveBookingAndGoToDashboard(): void {
-    this.http.get<any>(`${this.apiUrl}/addresses/my`, { headers: this.getAuthHeaders() })
-      .subscribe({
-        next: (addrRes) => {
-          const addresses = Array.isArray(addrRes) ? addrRes : addrRes.data || [];
-          const defaultAddr = addresses.find((a: any) => a.isDefault || a.IsDefault);
-          const address = defaultAddr || addresses[0];
-
-          if (!address) {
-            alert('Please add an address in your profile first!');
-            this.router.navigate(['/customer/profile']);
-            return;
-          }
-
-          const addressId = address.addressID || address.AddressID;
-          this.createBookingsWithAddress(addressId);
-        },
-        error: () => {
-          alert('Unable to fetch address. Please try again.');
-        }
-      });
-  }
-private createBookingsWithAddress(addressId: number): void {
-  const [day, monthName, year] = this.selectedDate.split(' ');
-  const monthIndex = new Date(Date.parse(`${monthName} 1, ${year}`)).getMonth();
-  const dateStr = `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-
-  let [time, period] = this.selectedTime.split(' ');
-  let [hours, minutes] = time.split(':').map(Number);
-  if (period === 'PM' && hours !== 12) hours += 12;
-  if (period === 'AM' && hours === 12) hours = 0;
-
-  const timeStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`;
-  const preferredStart = `${dateStr}T${timeStr}`;
-
-  const requests = this.cart.map(item => {
-    // C# DTO-க்கு EXACT MATCH! (PascalCase + Correct Names)
-    const payload = {
-      ServiceID: item.service.serviceID,
-      Quantity: item.quantity,
-      Description: `${item.service.serviceName} × ${item.quantity}`,
-      AddressID: addressId,
-      PreferredStartDateTime: preferredStart,
-      PreferredEndDateTime: new Date(
-        new Date(preferredStart).getTime() + 
-        (item.service.estimatedDuration * 60 * 60 * 1000 * item.quantity)
-      ).toISOString()
-    };
-
-    console.log('Sending payload:', payload); // Debug பார்க்க
-
-    return this.http.post(`${this.apiUrl}/bookings`, payload, {
-      headers: this.getAuthHeaders().set('Content-Type', 'application/json')
-    });
-  });
-
-  forkJoin(requests).subscribe({
-    next: (responses) => {
-      console.log('All bookings created:', responses);
-      this.step = 3; // SUCCESS SCREEN
-    },
-    error: (err) => {
-      console.error('Booking API Error:', err);
-      if (err.status === 400) {
-        alert('Invalid data sent. Check console (F12) for details.');
-      } else if (err.status === 401) {
-        alert('Session expired! Login again.');
-        this.router.navigate(['/login']);
-      } else {
-        alert('Booking failed: ' + (err.error?.message || err.statusText || 'Server error'));
-      }
+    if (!this.customerAddress) {
+      alert('No address found! Please add one in your profile.');
+      this.router.navigate(['/customer/profile']);
+      return;
     }
-  });
-}
-  // THIS WAS MISSING! NOW ADDED!
-  goToDashboard(): void {
+    this.createBookings();
+  }
+
+  private createBookings(): void {
+    const addressId = this.customerAddress!.addressID || this.customerAddress!.AddressID!;
+    const preferredStart = this.formatDateTime();
+
+    const requests = this.cart.map(item => {
+      const payload = {
+        ServiceID: item.service.serviceID,
+        Quantity: item.quantity,
+        Description: `${item.service.serviceName} × ${item.quantity}`,
+        AddressID: addressId,
+        PreferredStartDateTime: preferredStart,
+        PreferredEndDateTime: this.calculateEndTime(preferredStart, item.service.estimatedDuration, item.quantity)
+      };
+
+      return this.http.post(`${this.apiUrl}/bookings`, payload, {
+        headers: this.getAuthHeaders().set('Content-Type', 'application/json')
+      });
+    });
+
+    forkJoin(requests).subscribe({
+      next: () => {
+        // SUCCESS: Save data for Step 3 BEFORE clearing cart!
+        this.bookingSummary = [...this.cart];
+        this.confirmedDate = this.selectedDate;
+        this.confirmedTime = this.selectedTime;
+        this.confirmedTotal = this.totalAmount;
+
+        this.step = 3;
+        this.cart = []; // Now safe to clear
+      },
+      error: (err) => {
+        console.error('Booking failed:', err);
+        alert('Booking failed: ' + (err.error?.message || 'Server error'));
+      }
+    });
+  }
+
+  private formatDateTime(): string {
+    const [day, monthName, year] = this.selectedDate.split(' ');
+    const monthIndex = new Date(Date.parse(`${monthName} 1, ${year}`)).getMonth();
+    const dateStr = `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(+day).padStart(2, '0')}`;
+
+    let [time, period] = this.selectedTime.split(' ');
+    let [hours, minutes] = time.split(':').map(Number);
+    if (period === 'PM' && hours !== 12) hours += 12;
+    if (period === 'AM' && hours === 12) hours = 0;
+
+    return `${dateStr}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`;
+  }
+
+  private calculateEndTime(start: string, durationHours: number, quantity: number): string {
+    const end = new Date(start);
+    end.setHours(end.getHours() + (durationHours * quantity));
+    return end.toISOString();
+  }
+
+  // ====================== NAVIGATION ======================
+  goBackToDashboard(): void {
     this.router.navigate(['/customer/dashboard']);
+  }
+
+  changeAddress(): void {
+    this.router.navigate(['/customer/profile']);
+  }
+
+  goToProfile(): void {
+    this.router.navigate(['/customer/profile']);
+  }
+
+  initiatePayment(): void {
+    this.initiateBooking();
   }
 }
