@@ -147,7 +147,10 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let b of bookingHistory" class="hover:bg-white/5 transition">
+            <tr *ngFor="let b of bookingHistory"
+                class="hover:bg-white/5 transition cursor-pointer"
+                (click)="viewDetails(b.bookingID)">
+                
               <td class="font-semibold text-white">{{ b.serviceName }}</td>
               <td class="text-gray-300">{{ b.scheduledDate }}</td>
               <td>{{ b.technicianName }}</td>
