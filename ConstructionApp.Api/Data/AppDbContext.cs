@@ -16,6 +16,7 @@ namespace ConstructionApp.Api.Data
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Address> Addresses { get; set; }       // if you have Address model
+        public DbSet<TechnicianCategory> TechnicianCategories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -115,6 +116,19 @@ namespace ConstructionApp.Api.Data
                       .HasForeignKey(b => b.AddressID)
                       .OnDelete(DeleteBehavior.Restrict);
             });
+
+            // TechnicianCategory
+             modelBuilder.Entity<TechnicianCategory>()
+                .HasOne(tc => tc.Technician)
+                .WithMany(t => t.TechnicianCategories)
+                .HasForeignKey(tc => tc.TechnicianID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<TechnicianCategory>()
+                .HasOne(tc => tc.Category)
+                .WithMany(c => c.TechnicianCategories)
+                .HasForeignKey(tc => tc.CategoryID)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

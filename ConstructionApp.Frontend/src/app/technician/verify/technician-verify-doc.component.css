@@ -1,0 +1,191 @@
+/* technician-verify-doc.component.css
+   Dark teal + modern card theme (full final version with improved spacing) */
+
+:host {
+  display: block;
+  padding: 36px 20px;
+  min-height: 100vh;
+  background: #071015; 
+  font-family: Inter, Roboto, "Segoe UI", Arial, sans-serif;
+  color: #e6eef2;
+  box-sizing: border-box;
+}
+
+.verify-page {
+  display: flex;
+  justify-content: center;
+  padding-top: 24px;
+}
+
+.verify-card {
+  width: 100%;
+  max-width: 640px;
+  padding: 36px 40px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(6,20,22,0.94), rgba(9,28,30,0.95));
+  border: 1px solid rgba(255,255,255,0.03);
+  box-shadow: 0 10px 30px rgba(2,6,8,0.6), inset 0 1px rgba(255,255,255,0.02);
+}
+
+/* headings */
+.title {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0 0 10px;
+  color: #e8f5f6;
+}
+.subtitle {
+  font-size: 14px;
+  color: #9fb0b4;
+  margin-bottom: 20px;
+}
+
+/* form */
+.verify-form { width: 100%; }
+.row { margin-bottom: 24px; }
+
+/* label – more spacing */
+.label {
+  margin-bottom: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #cfe6e8;
+}
+
+/* inputs – slight margin on top */
+.input,
+.verify-form input[type="text"],
+.verify-form input[type="number"],
+.verify-form select {
+  width: 100%;
+  padding: 14px 16px;
+  margin-top: 4px;
+  border-radius: 8px;
+  background: rgba(11,28,30,0.6);
+  border: 1px solid rgba(255,255,255,0.05);
+  color: #d9eef0;
+  outline: none;
+  font-size: 14px;
+}
+
+.input::placeholder {
+  color: rgba(220,240,242,0.25);
+}
+
+/* categories */
+.categories { margin-bottom: 12px; }
+
+.cat-grid {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.cat-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #cfe6e8;
+  cursor: pointer;
+}
+
+.cat-item input {
+  width: 16px;
+  height: 16px;
+  accent-color: #6bd0c9;
+}
+
+/* File input */
+input[type="file"] { display: none; }
+
+.file-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.file-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(11,28,30,0.6);
+  border: 1px solid rgba(255,255,255,0.03);
+}
+
+.choose-pdf {
+  display: inline-flex;
+  padding: 8px 12px;
+  gap: 10px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #12a89a, #27d1b8);
+  color: #041617;
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(18,168,154,0.12);
+}
+
+.choose-pdf:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px rgba(18,168,154,0.18);
+}
+
+.file-name {
+  font-size: 13px;
+  color: #d9eef0;
+  max-width: 360px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-note {
+  font-size: 12px;
+  color: #9fb0bf;
+}
+
+/* status */
+.status {
+  color: #f6b26b;
+  font-weight: 700;
+  margin: 14px 0;
+}
+
+/* submit */
+.submit-row { margin-top: 24px; }
+
+.submit-btn {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  font-weight: 900;
+  background: linear-gradient(90deg, #ff8a22, #ffb34a);
+  color: #071014;
+  cursor: pointer;
+  box-shadow: 0 18px 40px rgba(255,130,36,0.16);
+  transition: 0.1s ease;
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 24px 50px rgba(255,130,36,0.22);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* responsive */
+@media (max-width: 640px) {
+  .verify-card { padding: 22px; }
+  .file-name { max-width: 200px; }
+  .title { font-size: 20px; }
+}

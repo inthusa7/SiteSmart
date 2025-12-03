@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ConstructionApp.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class New : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -145,6 +145,8 @@ namespace ConstructionApp.Api.Migrations
                     WalletBalance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TotalJobsCompleted = table.Column<int>(type: "int", nullable: false),
                     VerificationStatus = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false, defaultValue: "Pending"),
+                    IDProof = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    Certificate = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
                     VerifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
@@ -214,6 +216,35 @@ namespace ConstructionApp.Api.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "TechnicianCategories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TechnicianID = table.Column<int>(type: "int", nullable: false),
+                    CategoryID = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TechnicianCategories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TechnicianCategories_Categories_CategoryID",
+                        column: x => x.CategoryID,
+                        principalTable: "Categories",
+                        principalColumn: "CategoryID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TechnicianCategories_Technicians_TechnicianID",
+                        column: x => x.TechnicianID,
+                        principalTable: "Technicians",
+                        principalColumn: "TechnicianID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Addresses_UserID",
                 table: "Addresses",
@@ -267,6 +298,16 @@ namespace ConstructionApp.Api.Migrations
                 column: "ServiceName");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TechnicianCategories_CategoryID",
+                table: "TechnicianCategories",
+                column: "CategoryID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TechnicianCategories_TechnicianID",
+                table: "TechnicianCategories",
+                column: "TechnicianID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Technicians_UserID",
                 table: "Technicians",
                 column: "UserID",
@@ -287,6 +328,9 @@ namespace ConstructionApp.Api.Migrations
 
             migrationBuilder.DropTable(
                 name: "Bookings");
+
+            migrationBuilder.DropTable(
+                name: "TechnicianCategories");
 
             migrationBuilder.DropTable(
                 name: "Addresses");

@@ -5,17 +5,31 @@
     <div class="brand">
       <div class="logo">
         <span class="logo-ico">🛠</span>
-        <span class="logo-text">ConstructCo</span>
+        <span class="logo-text">Site Smart</span>
       </div>
     </div>
+  
 
     <nav class="nav">
       <a class="nav-item active"><span class="nav-ico">▦</span><span>Dashboard</span></a>
-      <a class="nav-item"><span class="nav-ico">🧰</span><span>Jobs</span></a>
-      <a class="nav-item"><span class="nav-ico">💼</span><span>Wallet</span></a>
-      <a class="nav-item"><span class="nav-ico">👤</span><span>Profile</span></a>
-      <a class="nav-item"><span class="nav-ico">⚙️</span><span>Settings</span></a>
+
+      <!-- <a class="nav-item" [class.disabled]="isPending()" (click)="openJobsModal()"><span class="nav-ico">🧰</span><span>Jobs</span></a>-->
+      <a class="nav-item"  (click)="openJobsModal()"><span class="nav-ico">🧰</span><span>Jobs</span></a>
+
+      <a class="nav-item" (click)="openWalletModal()"><span class="nav-ico">💼</span><span>Wallet</span></a>
+
+      <a class="nav-item" (click)="openProfileModal()"><span class="nav-ico">👤</span><span>Profile</span></a>
+
+      <a class="nav-item" (click)="openContactModal()"><span class="nav-ico">💬</span><span>Contact & About</span></a>
+
     </nav>
+<!--Verify account document --> 
+    <div class="verify-cta" style="margin:18px 0;">
+    <button class="btn-verify" (click)="openVerifyModal()">
+    🔒 Verify Account
+    <div style="font-size:12px; margin-top:6px;">Upload ID & certificates to get verified</div>
+  </button>
+  </div>
 
     <div class="side-footer">
       <div class="profile-row">
@@ -30,14 +44,14 @@
 
   <!-- MAIN -->
   <main class="main-area">
+    <div class="alert-banner" *ngIf="verificationStatus !== 'Verified'">
+  Your account is under verification. Please upload your document to get full access.
+</div>
+
     <header class="topbar">
       <div>
         <h1 class="welcome-title">Welcome, <span class="accent">{{ profileName || 'John' }}</span>!</h1>
         <div class="subtitle">Here's your performance overview for today.</div>
-      </div>
-
-      <div class="top-actions">
-        <button class="btn btn-new">+ New Job</button>
       </div>
     </header>
 
@@ -90,7 +104,12 @@
 
               <div class="request-actions">
                 <button class="btn btn-decline" (click)="decline(j.bookingID)">Decline</button>
-                <button class="btn btn-accept" (click)="acceptJob(j.bookingID)" [disabled]="isPending()">Accept</button>
+                <button class="btn btn-accept" 
+                 (click)="acceptJob(j.bookingID)" 
+                [disabled]="isPending()">
+                 Accept
+                </button>
+
               </div>
             </div>
 
@@ -136,5 +155,76 @@
         </div>
       </aside>
     </section>
+<!-- Verification Modal (compact centered container) -->
+<div class="verify-modal-backdrop" *ngIf="showVerifyModal" (click)="closeVerifyModal()">
+  <div class="verify-modal" (click)="$event.stopPropagation()">
+    <div class="verify-modal-header">
+      <h2>Technician Verification</h2>
+      <button class="close-btn" (click)="closeVerifyModal()">✖</button>
+    </div>
+
+    <div class="verify-modal-body">
+      <!-- Reuse the verify component inside modal -->
+      <app-technician-verify-doc></app-technician-verify-doc>
+    </div>
+  </div>
+</div>
+
+<!-- Contact & About Modal -->
+<div class="verify-modal-backdrop" *ngIf="showContactModal" (click)="closeContactModal()">
+  <div class="verify-modal" (click)="$event.stopPropagation()">
+
+    <div class="verify-modal-header">
+      <h2>Contact & About</h2>
+      <button class="close-btn" (click)="closeContactModal()">✖</button>
+    </div>
+
+    <div class="verify-modal-body">
+      <app-contact-about (saved)="closeContactModal()"></app-contact-about>
+    </div>
+
+  </div>
+</div>
+
+<!-- Profile Modal -->
+<div class="verify-modal-backdrop" *ngIf="showProfileModal" (click)="closeProfileModal()">
+  <div class="verify-modal" (click)="$event.stopPropagation()">
+    <div class="verify-modal-header">
+      <h2>Profile</h2>
+      <button class="close-btn" (click)="closeProfileModal()">✖</button>
+    </div>
+
+    <div class="verify-modal-body">
+      <app-profile (saved)="closeProfileModal()"></app-profile>
+    </div>
+  </div>
+</div>
+
+<!-- Wallet modal -->
+<div class="verify-modal-backdrop" *ngIf="showWalletModal" (click)="closeWalletModal()">
+  <div class="verify-modal" (click)="$event.stopPropagation()">
+    <div class="verify-modal-header">
+      <h2>Wallet</h2>
+      <button class="close-btn" (click)="closeWalletModal()">✖</button>
+    </div>
+    <div class="verify-modal-body">
+      <app-wallet></app-wallet>
+    </div>
+  </div>
+</div>
+
+
+<div class="verify-modal-backdrop" *ngIf="showJobsModal" (click)="closeJobsModal()">
+  <div class="verify-modal" (click)="$event.stopPropagation()">
+    <div class="verify-modal-header">
+      <h2>Jobs</h2>
+      <button class="close-btn" (click)="closeJobsModal()">✖</button>
+    </div>
+    <div class="verify-modal-body">
+      <app-jobs></app-jobs>
+    </div>
+  </div>
+</div>
+
   </main>
 </div>

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ConstructionApp.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251203151324_New")]
-    partial class New
+    [Migration("20251203173114_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -289,8 +289,16 @@ namespace ConstructionApp.Api.Migrations
                         .HasColumnType("nvarchar(20)")
                         .HasDefaultValue("Available");
 
+                    b.Property<string>("Certificate")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
                     b.Property<int>("ExperienceYears")
                         .HasColumnType("int");
+
+                    b.Property<string>("IDProof")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<decimal>("RatingAverage")
                         .HasColumnType("decimal(3,2)");
@@ -323,6 +331,38 @@ namespace ConstructionApp.Api.Migrations
                         .IsUnique();
 
                     b.ToTable("Technicians");
+                });
+
+            modelBuilder.Entity("ConstructionApp.Api.Models.TechnicianCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("TechnicianID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryID");
+
+                    b.HasIndex("TechnicianID");
+
+                    b.ToTable("TechnicianCategories");
                 });
 
             modelBuilder.Entity("ConstructionApp.Api.Models.User", b =>
@@ -475,6 +515,25 @@ namespace ConstructionApp.Api.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ConstructionApp.Api.Models.TechnicianCategory", b =>
+                {
+                    b.HasOne("ConstructionApp.Api.Models.Category", "Category")
+                        .WithMany("TechnicianCategories")
+                        .HasForeignKey("CategoryID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ConstructionApp.Api.Models.Technician", "Technician")
+                        .WithMany("TechnicianCategories")
+                        .HasForeignKey("TechnicianID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Technician");
+                });
+
             modelBuilder.Entity("ConstructionApp.Api.Models.Address", b =>
                 {
                     b.Navigation("Bookings");
@@ -483,6 +542,8 @@ namespace ConstructionApp.Api.Migrations
             modelBuilder.Entity("ConstructionApp.Api.Models.Category", b =>
                 {
                     b.Navigation("Services");
+
+                    b.Navigation("TechnicianCategories");
                 });
 
             modelBuilder.Entity("ConstructionApp.Api.Models.Service", b =>
@@ -493,6 +554,8 @@ namespace ConstructionApp.Api.Migrations
             modelBuilder.Entity("ConstructionApp.Api.Models.Technician", b =>
                 {
                     b.Navigation("AssignedBookings");
+
+                    b.Navigation("TechnicianCategories");
                 });
 
             modelBuilder.Entity("ConstructionApp.Api.Models.User", b =>

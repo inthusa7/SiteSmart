@@ -30,6 +30,9 @@ import { CustomerDashboardComponent } from './customer/dashboard.component';
 import { ProfileComponent } from './customer/profile/profile.component';
 import { BookingComponent } from './customer/booking/booking.component';
 
+// Technician
+import { TechnicianVerifyDocComponent } from './technician/verify/technician-verify-doc.component';
+
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
@@ -56,6 +59,7 @@ export const routes: Routes = [
     component: AdminLayoutComponent,
     canActivate: [AdminGuard],
     children: [
+      { path: 'dashboard', component: AdminDashboardComponent },
       { path: 'service', component: ServicesManagementComponent },
       { path: 'users', component: AdminUsersComponent },
       { path: 'booking', component: AdminBookingsComponent },
@@ -79,12 +83,12 @@ export const routes: Routes = [
   {
     path: 'technician/login',
     loadComponent: () =>
-      import('./auth/technician-login.component').then(m => m.TechnicianLoginComponent)
+      import('./auth/technician-login/technician-login.component').then(m => m.TechnicianLoginComponent)
   },
   {
     path: 'technician/register',
     loadComponent: () =>
-      import('./auth/technician-register.component').then(m => m.TechnicianRegisterComponent)
+      import('./auth/technician-register/technician-register.component').then(m => m.TechnicianRegisterComponent)
   },
 
   // Technician Protected Area
@@ -97,6 +101,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./technician/dashboard.component').then(m => m.TechnicianDashboardComponent)
       },
+      {
+      path: 'verify',
+      // if TechnicianVerifyDocComponent is standalone you can reference it directly:
+      component: TechnicianVerifyDocComponent
+      // OR use loadComponent for lazy:
+      // loadComponent: () => import('./technician/verify/technician-verify-doc.component').then(m => m.TechnicianVerifyDocComponent)
+    },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },

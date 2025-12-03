@@ -1,0 +1,59 @@
+<!-- src/app/technician/verify/technician-verify-doc.component.html -->
+<div class="verify-page">
+  <div class="verify-card">
+    <h2 class="title">Technician Verification</h2>
+    <p class="subtitle">Please upload required documents and fill details to get verified.</p>
+
+    <form [formGroup]="verifyForm" (ngSubmit)="submit()" class="verify-form">
+      <div class="row">
+        <label class="label">Address</label>
+        <input class="input" formControlName="address" placeholder="Your address" />
+      </div>
+
+      <div class="row">
+        <label class="label">Experience (years)</label>
+        <input type="number" class="input" formControlName="experienceYears" min="0" placeholder="e.g. 3" />
+      </div>
+
+     <!-- categoriesList is string[] -->
+<div class="categories">
+  <label class="label">Service Categories (choose one or more)</label>
+  <div class="cat-grid">
+  <label *ngFor="let c of categoriesList" class="cat-item" [class.selected]="categoriesSelected.includes(c)">
+    <input type="checkbox" [checked]="categoriesSelected.includes(c)" (change)="toggleCategory(c)" />
+    <span>{{ c }}</span>
+  </label>
+</div>
+</div>
+
+
+      <!-- NIC PDF -->
+<div class="file-row">
+  <label class="choose-pdf" for="nicInput">
+    <span>Choose PDF</span>
+  </label>
+  <input id="nicInput" type="file" accept="application/pdf" (change)="onFileSelect($event,'nic')" />
+  <div class="file-name" *ngIf="nicFileName">{{ nicFileName }}</div>
+  <div class="file-note" *ngIf="!nicFileName">Two sides of your ID  in one pdf• Max 5MB</div>
+</div>
+
+<!-- Certificate PDF -->
+<div class="file-row">
+  <label class="choose-pdf" for="certInput">
+    <span>Choose PDF</span>
+  </label>
+  <input id="certInput" type="file" accept="application/pdf" (change)="onFileSelect($event,'certificate')" />
+  <div class="file-name" *ngIf="certFileName">{{ certFileName }}</div>
+  <div class="file-note" *ngIf="!certFileName">Your ceirtificats in one PDF PDF• Max 5MB</div>
+</div>
+
+      <div class="status" *ngIf="statusMsg">{{ statusMsg }}</div>
+
+      <div class="submit-row">
+        <button type="submit" class="submit-btn" [disabled]="submitting">
+          {{ submitting ? 'Submitting...' : 'Submit Documents' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

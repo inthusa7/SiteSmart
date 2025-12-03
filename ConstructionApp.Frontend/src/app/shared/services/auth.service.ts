@@ -102,6 +102,11 @@ export class AuthService {
     return localStorage.getItem(this.techKey);
   }
 
+   getTechnician() {
+  return JSON.parse(localStorage.getItem('technician') || '{}');
+  }
+
+
   getTechnicianVerificationStatus(): string | null {
     return localStorage.getItem(this.techStatusKey);
   }
@@ -122,5 +127,14 @@ export class AuthService {
     this.userRole$.next(null);
     this.technicianId$.next(null);
     this.router.navigate(['/login']);
+  }
+  setUser(user: any) {
+    localStorage.setItem('user', JSON.stringify(user));
+  }
+
+  getUser(): any | null {
+    const raw = localStorage.getItem('user');
+    if (!raw) return null;
+    try { return JSON.parse(raw); } catch { return null; }
   }
 }

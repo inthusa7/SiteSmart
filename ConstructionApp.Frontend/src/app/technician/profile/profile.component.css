@@ -1,0 +1,225 @@
+/* profile.component.css
+   Dark-teal theme — matches your existing theme (no color changes) */
+
+.profile-root {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: Inter, Roboto, "Segoe UI", Arial, sans-serif;
+  color: #e6eef2;
+}
+
+/* Card */
+.profile-card {
+  width: 100%;
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 28px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(6,20,22,0.94), rgba(9,28,30,0.95));
+  border: 1px solid rgba(255,255,255,0.03);
+  box-shadow: 0 20px 60px rgba(2,6,12,0.6);
+}
+
+/* Heading */
+.profile-heading {
+  margin: 0 0 22px 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: #e8f5f6;
+}
+
+/* Grid */
+.profile-grid {
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+/* Avatar column */
+.avatar-col {
+  width: 220px;
+  flex: 0 0 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar-wrap {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, rgba(18,38,40,0.98), rgba(12,30,32,0.96));
+  border: 6px solid rgba(86,61,170,0.12); /* subtle purple ring */
+  box-shadow: 0 18px 40px rgba(14,28,30,0.6), inset 0 -6px 18px rgba(255,255,255,0.02);
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Avatar actions */
+.avatar-actions {
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+}
+
+#avatarInput { display: none; }
+
+.btn-choose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #12a89a, #27d1b8);
+  color: #041617;
+  font-weight: 800;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+}
+
+.btn-reset {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.04);
+  color: #cfe6e8;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Form column */
+.form-col {
+  flex: 1;
+  min-width: 0;
+}
+
+.field {
+  margin-bottom: 18px;
+}
+.field label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: #cfe6e8;
+  margin-bottom: 8px;
+}
+
+.input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(11,28,30,0.6);
+  border: 1px solid rgba(255,255,255,0.03);
+  color: #d9eef0;
+  outline: none;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+.input::placeholder { color: rgba(220,240,242,0.22); }
+
+/* divider */
+.divider {
+  height: 1px;
+  background: rgba(255,255,255,0.02);
+  margin: 8px 0 18px 0;
+  border-radius: 2px;
+}
+
+/* password section title */
+.pw-title {
+  display: block;
+  font-weight: 800;
+  color: #dff7f6;
+  margin-bottom: 8px;
+}
+
+/* errors */
+.error {
+  color: #ffb4a6;
+  margin-top: 6px;
+  font-size: 13px;
+}
+
+/* actions */
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #cfe6e8;
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, #ff8a22, #ffb34a);
+  color: #071014;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* responsive */
+@media (max-width: 900px) {
+  .profile-grid { flex-direction: column; align-items: center; }
+  .avatar-col { width: 100%; flex: 0 0 auto; order: 0; }
+  .avatar-wrap { width:130px; height:130px; }
+  .form-col { width: 100%; }
+  .profile-card { padding: 20px; border-radius: 12px; }
+}
+/* Password toggle row */
+.pw-toggle-row { margin-bottom: 8px; }
+.pw-toggle {
+  background: transparent;
+  border: 1px dashed rgba(255,255,255,0.04);
+  color: #cfe6e8;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 800;
+}
+.pw-toggle:hover { background: rgba(255,255,255,0.01); transform: translateY(-1px); }
+
+/* Collapsible area — encourage smooth height transition */
+/* technique: use max-height with overflow hidden for simple collapse animation */
+.pw-collapse {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 220ms ease, opacity 180ms ease;
+  opacity: 0;
+  margin-bottom: 0;
+}
+.pw-collapse.open {
+  max-height: 520px; /* large enough to contain the inner fields */
+  opacity: 1;
+  margin-bottom: 12px;
+}
+
+/* reduce spacing inside collapsed area when closed */
+.pw-collapse .field { margin-bottom: 12px; }

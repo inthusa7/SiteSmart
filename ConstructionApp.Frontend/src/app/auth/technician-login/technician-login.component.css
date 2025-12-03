@@ -1,0 +1,181 @@
+/* ==============================
+   TECHNICIAN LOGIN – DARK GLASS UI
+   Matching Dashboard Theme
+   ============================== */
+
+:root {
+  --bg: #0b141b;
+  --panel: #131d26;
+  --panel-glass: rgba(19, 29, 38, 0.55);
+  --text: #e9f0f6;
+  --muted: #9fb0bf;
+  --accent: #ff7a1a;
+  --accent-2: #e65e00;
+}
+
+/* PAGE */
+.login-container {
+  min-height: 100vh;
+  width: 100%;
+  background: radial-gradient(circle at top left, rgba(255,140,50,0.12), transparent 60%),
+              radial-gradient(circle at top right, rgba(255,120,0,0.08), transparent 60%),
+              var(--bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Glow particles background */
+.login-container::before {
+  content: "";
+  position: absolute;
+  width: 450px;
+  height: 450px;
+  top: -80px;
+  left: -80px;
+  background: radial-gradient(circle, rgba(255,122,26,0.22), transparent 70%);
+  filter: blur(60px);
+}
+
+.login-container::after {
+  content: "";
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  bottom: -80px;
+  right: -60px;
+  background: radial-gradient(circle, rgba(255,122,26,0.18), transparent 70%);
+  filter: blur(70px);
+}
+
+/* LOGIN BOX */
+.login-box {
+  width: 420px;
+  padding: 40px;
+  border-radius: 18px;
+  background: var(--panel-glass);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.55);
+  color: var(--text);
+  z-index: 2;
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.login-box h2 {
+  font-size: 26px;
+  font-weight: 800;
+  margin: 0 0 12px 0;
+  color: var(--text);
+}
+
+.login-box p {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 25px;
+}
+
+/* FORM FIELD */
+.user-box {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.user-box label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.user-box input {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 15px;
+  border-radius: 10px;
+  color: var(--text);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  outline: none;
+  transition: 0.25s ease;
+}
+
+.user-box input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(255,122,26,0.4);
+}
+
+/* PASSWORD EYE ICON */
+.eye {
+  position: absolute;
+  right: 18px;
+  margin-top: -36px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: var(--muted);
+}
+
+/* LOGIN BUTTON */
+.login-btn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  border: none;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.3s ease;
+  box-shadow: 0 8px 25px rgba(255,122,26,0.2);
+}
+
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(255,122,26,0.3);
+}
+
+.login-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Error message */
+.error-message {
+  padding: 12px;
+  margin-bottom: 12px;
+  text-align: center;
+  background: rgba(255,60,60,0.15);
+  border: 1px solid rgba(255,60,60,0.35);
+  border-radius: 10px;
+  color: #ffb3b3;
+  font-size: 14px;
+}
+
+/* REGISTER LINK */
+.signup {
+  margin-top: 14px;
+  font-size: 14px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.signup a {
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.signup a:hover {
+  text-decoration: underline;
+}

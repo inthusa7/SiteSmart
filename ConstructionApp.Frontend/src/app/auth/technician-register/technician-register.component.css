@@ -1,0 +1,145 @@
+:host {
+  display:block !important;
+  min-height:100vh !important;
+  width:100% !important;
+  background:
+    radial-gradient(circle at 8% 12%, rgba(255,122,26,0.06), transparent 10%),
+    radial-gradient(circle at 92% 84%, rgba(59,89,255,0.03), transparent 10%),
+    linear-gradient(180deg, #071216 0%, #08151a 100%) !important;
+  position:relative !important;
+  overflow:hidden !important;
+}
+
+/* keep the rest of the card styles (same as before) */
+.login-container{ min-height:100vh; width:100%; display:flex; justify-content:center; align-items:center; padding:36px; position:relative; z-index:0; }
+
+.area{ position:absolute; inset:0; pointer-events:none; z-index:0; }
+.circles{ position:absolute; inset:0; margin:0; padding:0; list-style:none; z-index:0; }
+.circles li{ position:absolute; display:block; background: radial-gradient(circle, rgba(255,122,26,0.09), rgba(255,122,26,0.02)); border-radius:50%; animation: floaty 28s linear infinite; filter: blur(24px); opacity:0.92; }
+.circles li:nth-child(1){ width:260px;height:260px; left:4%; top:6%; animation-delay:0s;}
+.circles li:nth-child(2){ width:140px;height:140px; left:18%; top:68%; animation-delay:2s;}
+.circles li:nth-child(3){ width:90px;height:90px; left:84%; top:12%; animation-delay:4s;}
+.circles li:nth-child(4){ width:180px;height:180px; left:72%; top:72%; animation-delay:6s;}
+@keyframes floaty { 0%{ transform: translateY(0) rotate(0deg)} 50%{ transform: translateY(-80px) rotate(60deg)} 100%{ transform: translateY(0) rotate(0deg)} }
+
+.login-box{
+  position:relative; z-index:4; width:420px; max-width:90%; padding:36px 44px; border-radius:14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  background-color: rgba(16,24,28,0.72);
+  border: 1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 20px 60px rgba(2,6,23,0.66);
+  backdrop-filter: blur(12px) saturate(1.06);
+  -webkit-backdrop-filter: blur(12px) saturate(1.06);
+  color: #e9f0f6; overflow:hidden; display:block;
+}
+
+.login-box h2{ margin:0; font-size:26px; font-weight:800; color:#e9f0f6 }
+.login-box p{ margin:8px 0 20px 0; color:#9fb0bf }
+
+.user-box {
+  margin-bottom: 18px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px; /* small gap between label and input */
+}
+
+.user-box label {
+  font-size: 13px;
+  color: #9fb0bf;
+  font-weight: 700;
+  margin-left: 4px;
+  order: 0; /* label always on top */
+}
+
+.user-box input[type="text"],
+.user-box input[type="email"],
+.user-box input[type="tel"],
+.user-box input[type="password"] {
+  order: 1;
+  width: 92%;
+  margin:0 auto;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.03);
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+  color: #e9f0f6;
+  font-size: 15px;
+  outline: none;
+  transition: box-shadow .18s, border-color .18s, transform .12s;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.01);
+}
+
+.user-box .eye {
+  top: 36px; /* adjust because input moved up */
+}
+
+.user-box label{ font-size:13px; color:#9fb0bf; font-weight:700; margin-left:4px; }
+.user-box input[type="text"], .user-box input[type="email"], .user-box input[type="tel"], .user-box input[type="password"]{
+  width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,0.03);
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); color:#e9f0f6; font-size:15px; outline:none;
+  transition: box-shadow .18s, border-color .18s, transform .12s; box-shadow: inset 0 1px 0 rgba(255,255,255,0.01);
+}
+.user-box input::placeholder{ color: rgba(255,255,255,0.12); }
+.user-box input:focus{ border-color: rgba(255,122,26,0.28); box-shadow: 0 10px 30px rgba(255,122,26,0.06); transform: translateY(-1px); }
+
+.user-box .eye{ position:absolute; right:18px; top:44px; cursor:pointer; color:#9fb0bf; z-index:6; }
+
+.strength-bar{ height:8px; background: rgba(255,255,255,0.02); border-radius:6px; overflow:hidden; margin-bottom:12px; border:1px solid rgba(255,255,255,0.02); }
+.strength-bar > div{ height:100%; width:0%; background: linear-gradient(90deg, #f97316, #ffbd6b); transition:width .25s; }
+
+/* ensure button layout and centering */
+.login-btn {
+  position: relative;               /* container for absolutely-positioned decor spans */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;         /* keep label centered */
+  text-align: center;
+  gap: 0;                           /* decorative spans are absolute, no gap */
+  padding: 12px 18px;               /* keep your existing padding */
+}
+
+/* label always sits above decorative elements */
+.login-btn .btn-label {
+  position: relative;
+  z-index: 3;                       /* higher than decorative elements */
+  pointer-events: none;
+  display: inline-block;
+  width: 100%;
+}
+
+/* make decorative spans decorative only (don't affect layout) */
+.login-btn .dec {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  /* tweak size/appearance — these are just samples, adjust to your effect */
+  width: 18%;
+  height: 2px;
+  background: rgba(255,255,255,0.06);
+  top: 8%;
+  left: 6%;
+  transform-origin: center;
+  transition: transform .25s ease, opacity .25s ease;
+}
+
+/* target each dec to place them differently — customize as needed */
+.login-btn .dec-1 { top: 8%; left: 6%; transform: rotate(0deg); }
+.login-btn .dec-2 { top: 8%; right: 6%; left: auto; transform: rotate(0deg); }
+.login-btn .dec-3 { bottom: 8%; left: 6%; transform: rotate(0deg); }
+.login-btn .dec-4 { bottom: 8%; right: 6%; left: auto; transform: rotate(0deg); }
+
+/* disabled / hover states keep label centered */
+.login-btn[disabled] .btn-label { opacity: 0.95; }
+
+.login-btn{ display:inline-flex; align-items:center; justify-content:center; gap:12px; width:100%; padding:12px 18px; margin-top:8px; border-radius:12px; border:0; font-weight:900; letter-spacing:1px; color:#071014; background: linear-gradient(90deg,#ff7a1a,#ff9b4a); box-shadow: 0 18px 50px rgba(255,122,26,0.16); cursor:pointer; transition: transform .12s ease, box-shadow .12s ease; }
+.login-btn:hover{ transform: translateY(-3px); box-shadow: 0 28px 70px rgba(255,122,26,0.20); }
+.login-btn[disabled]{ opacity:.55; cursor:not-allowed; transform:none; box-shadow:none; }
+
+.signup{ margin-top:16px; font-size:14px; color:#9fb0bf; text-align:center; }
+.signup a{ color:#ff7a1a; font-weight:800; text-decoration:none; }
+.signup a:hover{ text-decoration:underline; }
+
+input.ng-invalid.ng-touched { box-shadow: 0 8px 28px rgba(239,68,68,0.06); border-color: rgba(239,68,68,0.16); }
+
+@media (max-width:780px){ .login-box{ padding:20px; border-radius:12px; width:92%; } .login-container{ padding:12px } }

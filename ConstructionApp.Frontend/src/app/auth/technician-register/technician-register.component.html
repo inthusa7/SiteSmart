@@ -39,9 +39,13 @@
       </div>
 
       <button type="submit" class="login-btn" [disabled]="loading || passwordStrength < 100">
-        <span></span><span></span><span></span><span></span>
-        {{ loading ? 'Creating...' : 'REGISTER' }}
-      </button>
+  <!-- decorative spans (keep them) -->
+  <span class="dec dec-1"></span><span class="dec dec-2"></span><span class="dec dec-3"></span><span class="dec dec-4"></span>
+
+  <!-- central label — always centered -->
+  <span class="btn-label">{{ loading ? 'Creating...' : 'REGISTER' }}</span>
+</button>
+
 
       <div class="signup">
         Already a technician? <a routerLink="/technician/login">Login here</a>

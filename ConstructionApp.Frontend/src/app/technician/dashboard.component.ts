@@ -1,13 +1,20 @@
 // src/app/technician/dashboard.component.ts
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TechnicianService } from './technician.service';
+import { TechnicianService } from '../shared/services/technician.service';
 import { AuthService } from '../shared/services/auth.service';
+import { RouterLink } from '@angular/router';
+import { TechnicianVerifyDocComponent } from "./verify/technician-verify-doc.component";
+import { ContactAboutComponent } from './contact-about/contact-about.component';
+import { ProfileComponent } from './profile/profile.component';
+import { WalletComponent } from './wallet/wallet.component';
+import { JobsComponent } from './jobs/jobs.component';
+
 
 @Component({
   selector: 'app-technician-dashboard',
   standalone: true,
-  imports: [CommonModule], // <-- fixes *ngIf / *ngFor warnings
+  imports: [CommonModule, RouterLink, TechnicianVerifyDocComponent,ContactAboutComponent,ProfileComponent,WalletComponent,JobsComponent], // <-- fixes *ngIf / *ngFor warnings
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
   encapsulation: ViewEncapsulation.None
@@ -25,6 +32,14 @@ export class TechnicianDashboardComponent implements OnInit {
   loading = false;
   error = '';
 
+  selectedDocument: File | null = null;
+  documentUploaded = false;
+  showContactModal = false;
+  showProfileModal = false;
+  showWalletModal = false;
+  showJobsModal = false;
+
+
   constructor(private techService: TechnicianService, private auth: AuthService) {}
 
   ngOnInit(): void {
@@ -41,6 +56,10 @@ export class TechnicianDashboardComponent implements OnInit {
     this.setupMockData();
     // optionally call API:
     // this.loadJobs();
+
+// 01.12.2025
+    this.loadTechnicianDetails();
+    this.loadDashboardData();
   }
 
   private setupMockData(): void {
@@ -131,4 +150,82 @@ export class TechnicianDashboardComponent implements OnInit {
     const value = el ? el.value : '';
     if (value) this.updateStatus(bookingId, value);
   }
+  // 01.12.2025
+  loadTechnicianDetails() {
+  const tech = this.auth.getTechnician();
+
+  this.profileName = tech.fullName;
+  this.profileImage = tech.profileImage || "/assets/avatar.png";
+  this.verificationStatus = tech.verificationStatus;
 }
+
+uploadDocument(event: any) {
+  this.selectedDocument = event.target.files[0] ?? null;
+}
+
+submitDocument() {
+  const form = new FormData();
+  form.append('file', this.selectedDocument!);
+  form.append('technicianId', this.auth.getTechnician().technicianID);
+
+  this.techService.uploadDocument(form).subscribe({
+    next: () => {
+      this.documentUploaded = true;
+      alert("Document uploaded. Waiting for admin approval.");
+    },
+    error: () => alert("Failed to upload document.")
+  });
+}
+loadDashboardData() {
+  this.techService.getDashboard().subscribe({
+    next: (data: any) => {
+      this.stats = data.stats;
+      this.newJobs = data.jobs;
+      this.currentJob = data.currentJob;
+      this.weekly = data.weekly;
+    },
+    error: () => this.error = 'Failed to load dashboard data'
+  });
+}
+showVerifyModal = false;
+
+openVerifyModal() {
+  this.showVerifyModal = true;
+  // disable background scroll
+  document.body.style.overflow = 'hidden';
+}
+
+closeVerifyModal() {
+  this.showVerifyModal = false;
+  // restore background scroll
+  document.body.style.overflow = '';
+}
+
+openContactModal() {
+  this.showContactModal = true;
+  document.body.style.overflow = 'hidden';
+}
+
+closeContactModal() {
+  this.showContactModal = false;
+  document.body.style.overflow = '';
+}
+
+openProfileModal() {
+  this.showProfileModal = true;
+  document.body.style.overflow = 'hidden';
+}
+
+closeProfileModal() {
+  this.showProfileModal = false;
+  document.body.style.overflow = '';
+}
+
+openWalletModal() { this.showWalletModal = true; document.body.style.overflow='hidden'; }
+closeWalletModal() { this.showWalletModal = false; document.body.style.overflow=''; }
+
+
+openJobsModal() { this.showJobsModal = true; document.body.style.overflow = 'hidden'; }
+closeJobsModal() { this.showJobsModal = false; document.body.style.overflow = ''; }
+}
+

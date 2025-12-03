@@ -16,4 +16,5 @@ public class Category
         public DateTime? UpdatedDate { get; set; }
 
     public ICollection<Service> Services { get; set; } = new List<Service>();
+    public ICollection<TechnicianCategory> TechnicianCategories { get; set; } = new List<TechnicianCategory>();
 }

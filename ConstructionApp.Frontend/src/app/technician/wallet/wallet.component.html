@@ -1,0 +1,94 @@
+<div class="wallet-root">
+
+  <!-- TOP ROW: Balance (left) + Monthly Summary (right) -->
+  <div class="wallet-top-row">
+    <div class="balance-card top-left">
+      <div class="balance-left">
+        <div class="label">Wallet Balance</div>
+        <div class="balance">Rs {{ balance | number:'1.2-2' }}</div>
+
+        
+  <div class="meta" style="margin-top:6px; color:#9fb0bf">
+    Last top-up: <strong>Rs {{ lastTopupAmount !== null ? (lastTopupAmount | number:'1.2-2') : '-' }}</strong>
+    <br>
+    Last commission: <strong>Rs {{ lastCommissionAmount !== null ? (lastCommissionAmount | number:'1.2-2') : '-' }}</strong>
+  </div>
+</div>
+    </div>
+
+    <div class="summary-card top-right">
+      <div class="card-head"><h4>Monthly Summary</h4></div>
+      <div class="card-body">
+        <div class="summary-row"><span>Customer income (this month)</span><strong>Rs {{ totalMonthIncome | number:'1.2-2' }}</strong></div>
+        <div class="summary-row"><span>Commission paid (this month)</span><strong>- Rs {{ totalMonthCommissionPaid | number:'1.2-2' }}</strong></div>
+        <div class="summary-row"><span>Topups (this month)</span><strong>Rs {{ totalMonthTopups | number:'1.2-2' }}</strong></div>
+        <div class="summary-row"><span>Available balance</span><strong>Rs {{ balance | number:'1.2-2' }}</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRANSACTION HISTORY (full width) -->
+  <div class="transactions-wrap card">
+    <div class="card-head">
+      <h3>Transaction History</h3>
+      <div class="muted">{{ transactions.length }} items</div>
+    </div>
+
+    <div class="tx-list">
+      <!-- newest at bottom; render reversed so newest last -->
+      <div class="tx-row" *ngFor="let tx of transactions.slice().reverse()">
+        <div class="tx-left">
+          <div class="tx-ico" [ngClass]="txClass(tx)">
+            {{ tx.type === 'commission' || tx.type === 'withdrawal' ? '−' : '+' }}
+          </div>
+          <div class="tx-body">
+            <div class="tx-title">{{ tx.title }}</div>
+            <div class="tx-date">{{ fmtDate(tx.date) }}</div>
+          </div>
+        </div>
+
+        <div class="tx-right">
+          <div class="tx-amount" [ngClass]="txClass(tx)">
+            {{ tx.type === 'commission' || tx.type === 'withdrawal' ? '-' : '+' }}Rs {{ tx.amount | number:'1.2-2' }}
+          </div>
+          <div class="tx-status muted">{{ tx.status }}</div>
+        </div>
+      </div>
+
+      <div *ngIf="transactions.length === 0" class="empty">No transactions yet</div>
+    </div>
+  </div>
+
+  <!-- REQUEST PAYOUT (full width, collapsible) -->
+  <div class="withdraw-wrap card" id="withdraw">
+    <div class="card-head withdraw-toggle" (click)="toggleWithdraw()">
+      <h3>Request Payout</h3>
+      <div class="arrow" [class.open]="showWithdraw">▼</div>
+    </div>
+
+    <div class="muted" *ngIf="!showWithdraw">Click to expand withdraw options</div>
+
+    <div class="withdraw-body" [class.open]="showWithdraw">
+      <form [formGroup]="withdrawForm" (ngSubmit)="requestWithdraw()" class="form-compact">
+        <label>Amount</label>
+        <input class="input" type="number" formControlName="amount" placeholder="Amount to withdraw" />
+
+        <label>Method</label>
+        <select class="input" formControlName="method">
+          <option value="bank">Bank Transfer</option>
+          <option value="mobile">Mobile Wallet</option>
+        </select>
+
+        <label>Account (bank account / wallet ID)</label>
+        <input class="input" type="text" formControlName="account" placeholder="Account number / Wallet ID" />
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" [disabled]="submittingWithdraw">
+            {{ submittingWithdraw ? 'Requesting...' : 'Request Payout' }}
+          </button>
+          <div class="status" *ngIf="statusMsg">{{ statusMsg }}</div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

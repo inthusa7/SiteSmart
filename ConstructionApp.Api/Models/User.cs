@@ -75,12 +75,19 @@ namespace ConstructionApp.Api.Models
         [StringLength(20)]
         public string VerificationStatus { get; set; } = "Pending";
 
+        [StringLength(1000)]
+        public string? IDProof { get; set; }
+
+        [StringLength(1000)]
+        public string? Certificate { get; set; }
+
         public DateTime? VerifiedAt { get; set; }
 
         // Navigation
         public User User { get; set; } = null!;
 
         public ICollection<Booking> AssignedBookings { get; set; } = new List<Booking>();
+        public ICollection<TechnicianCategory> TechnicianCategories { get; set; } = new List<TechnicianCategory>();
     }
 
    

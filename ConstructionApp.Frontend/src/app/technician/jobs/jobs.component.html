@@ -1,0 +1,69 @@
+<div class="jobs-root">
+  <div class="jobs-top">
+    <h2 class="title">Jobs</h2>
+
+    <!-- wrap controls in the form group -->
+    <div class="controls" [formGroup]="filterForm">
+      <input class="input search" placeholder="Search by id, title, address or customer"
+             (input)="onSearchChange($any($event.target).value)" />
+
+      <!-- use formControlName only (no [formControl]) -->
+      <select class="input select" formControlName="status">
+        <option value="all">All</option>
+        <option value="new">New</option>
+        <option value="accepted">Accepted</option>
+        <option value="inprogress">In Progress</option>
+        <option value="completed">Completed</option>
+        <option value="declined">Declined</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="jobs-list">
+    <div *ngFor="let job of filteredJobs" class="job-card" [class.new]="isNew(job)">
+      <div class="job-left">
+        <div class="job-title">{{ job.title }}</div>
+        <div class="job-meta">{{ job.customerName }} • {{ job.address }}</div>
+        <div class="job-id">#{{ job.bookingID }} • Rs {{ job.rate | number:'1.2-2' }}</div>
+      </div>
+
+      <div class="job-actions">
+        <button class="btn small" (click)="openDetail(job)">View</button>
+        <button class="btn accept" (click)="acceptJob(job)" [disabled]="job.status === 'accepted'">Accept</button>
+        <button class="btn decline" (click)="declineJob(job)" [disabled]="job.status === 'declined'">Decline</button>
+      </div>
+    </div>
+
+    <div *ngIf="filteredJobs.length === 0" class="empty">No jobs found</div>
+  </div>
+</div>
+
+<!-- Detail modal (unchanged) -->
+<div class="detail-backdrop" *ngIf="showDetail" (click)="closeDetail()">
+  <div class="detail-modal" (click)="$event.stopPropagation()">
+    <div class="detail-header">
+      <div>
+        <h3>{{ activeJob?.title }}</h3>
+        <div class="muted">#{{ activeJob?.bookingID }} • {{ activeJob?.customerName }} • {{ activeJob?.createdAt }}</div>
+      </div>
+      <button class="close" (click)="closeDetail()">✖</button>
+    </div>
+
+    <div class="detail-body">
+      <div class="detail-row"><strong>Address:</strong> {{ activeJob?.address }}</div>
+      <div class="detail-row"><strong>Rate:</strong> Rs {{ activeJob?.rate | number:'1.2-2' }}</div>
+      <div class="detail-row"><strong>Description:</strong> {{ activeJob?.description }}</div>
+
+      <div class="detail-actions">
+        <label>Status</label>
+        <select class="input" [value]="activeJob?.status" (change)="updateJobStatus(activeJob!, $any($event.target).value)">
+          <option value="new">New</option>
+          <option value="accepted">Accepted</option>
+          <option value="inprogress">In Progress</option>
+          <option value="completed">Completed</option>
+          <option value="declined">Declined</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,86 @@
+<div class="profile-root">
+  <div class="profile-card">
+    <h2 class="profile-heading">Profile Information</h2>
+
+    <div class="profile-grid">
+      <!-- Left: avatar -->
+      <div class="avatar-col">
+        <div class="avatar-wrap">
+          <img [src]="avatarPreview" alt="avatar" class="avatar-img" />
+        </div>
+
+        <div class="avatar-actions">
+          <label class="btn-choose" for="avatarInput">Choose Avatar</label>
+          <input id="avatarInput" type="file" accept="image/*" (change)="onAvatarSelected($event)" />
+          <button type="button" class="btn-reset" (click)="resetAvatar()">Reset</button>
+        </div>
+      </div>
+
+      <!-- Right: form -->
+      <div class="form-col">
+        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+          <div class="field">
+            <label>Full Name</label>
+            <input class="input" formControlName="fullName" placeholder="Your full name" />
+            <div class="error" *ngIf="fullName?.touched && fullName?.invalid">Full name is required.</div>
+          </div>
+
+          <div class="field">
+            <label>Email Address</label>
+            <input class="input" formControlName="email" placeholder="you@example.com" />
+            <div class="error" *ngIf="email?.touched && email?.invalid">Valid email required.</div>
+          </div>
+
+          <div class="field">
+            <label>Phone Number</label>
+            <input class="input" formControlName="phone" placeholder="+94 77 123 4567" />
+            <div class="error" *ngIf="phone?.touched && phone?.invalid">Phone is required.</div>
+          </div>
+
+          <div class="field">
+            <label>Address</label>
+            <input class="input" formControlName="address" placeholder="Your address" />
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Toggle button for password section -->
+          <div class="pw-toggle-row">
+            <button type="button" class="pw-toggle" (click)="togglePasswordSection()">
+              {{ showPasswordSection ? 'Hide password fields' : 'Change password' }}
+            </button>
+          </div>
+
+          <!-- Collapsible password area -->
+          <div class="pw-collapse" [class.open]="showPasswordSection" [attr.aria-hidden]="!showPasswordSection">
+            <div [formGroup]="passwordGroup">
+              <div class="field">
+                <label>Current Password</label>
+                <input class="input" type="password" formControlName="currentPassword" placeholder="Current password" />
+              </div>
+
+              <div class="field">
+                <label>New Password</label>
+                <input class="input" type="password" formControlName="newPassword" placeholder="New password (min 6 chars)" />
+                <div class="error" *ngIf="newPassword?.touched && newPassword?.invalid">New password must be at least 6 characters.</div>
+              </div>
+
+              <div class="field">
+                <label>Confirm New Password</label>
+                <input class="input" type="password" formControlName="confirmPassword" placeholder="Confirm new password" />
+                <div class="error" *ngIf="profileForm.get('passwordGroup')?.errors?.['mismatch']">Passwords do not match.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="button" class="btn-secondary" (click)="resetForm()" [disabled]="submitting">Reset</button>
+            <button type="submit" class="btn-primary" [disabled]="submitting">
+              {{ submitting ? 'Saving...' : 'Save Changes' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
