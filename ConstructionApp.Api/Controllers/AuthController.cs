@@ -117,6 +117,44 @@ namespace ConstructionApp.Api.Controllers
             });
         }
 
+        [HttpPost("forgot")]
+        public async Task<IActionResult> Forgot([FromBody] ForgotDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto?.Email))
+                return Ok(new AuthResponseDto { Success = false, Message = "Email is required." });
+
+            // find user
+            var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+
+            // Always return generic success to avoid revealing user existence
+            if (user == null)
+            {
+                return Ok(new AuthResponseDto { Success = true, Message = "If that email exists we sent a reset link." });
+            }
+
+            // create single-use token & expiry
+            user.VerificationToken = Guid.NewGuid().ToString("N");
+            user.TokenExpires = DateTime.UtcNow.AddHours(2);
+            await _db.SaveChangesAsync();
+
+            // Build a frontend reset URL (adjust path to your frontend route)
+            // e.g. https://app.example.com/reset-password?token=...
+            var resetUrl = $"{Request.Scheme}://{Request.Host}/reset-password?token={user.VerificationToken}";
+
+            var html = $@"
+            <h2>Password Reset Request</h2>
+            <p>We received a request to reset the password for <strong>{user.Email}</strong>.</p>
+            <p>Click the link below to reset your password (valid for 2 hours):</p>
+            <p><a href='{resetUrl}'>Reset your password</a></p>
+            <p>If you didn't request this, you can safely ignore this email.</p>
+            ";
+
+            await _email.SendEmailAsync(user.Email, "Reset your password", html);
+
+            return Ok(new AuthResponseDto { Success = true, Message = "If that email exists we sent a reset link." });
+        }
+
+
         // ====================================
         // RESET PASSWORD
         // ====================================

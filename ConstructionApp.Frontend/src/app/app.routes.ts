@@ -48,6 +48,7 @@ export const routes: Routes = [
 
   // Admin Login
   { path: 'admin-login', component: AdminLoginComponent },
+  { path: 'admin/dashboard', component: AdminDashboardComponent },
 
   // Admin Protected Area
   {
@@ -55,7 +56,6 @@ export const routes: Routes = [
     component: AdminLayoutComponent,
     canActivate: [AdminGuard],
     children: [
-      { path: 'dashboard', component: AdminDashboardComponent },
       { path: 'service', component: ServicesManagementComponent },
       { path: 'users', component: AdminUsersComponent },
       { path: 'booking', component: AdminBookingsComponent },

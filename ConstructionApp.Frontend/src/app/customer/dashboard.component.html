@@ -58,7 +58,7 @@
     <!-- Current Active Booking -->
     <section class="current-booking-section" *ngIf="currentBooking; else noCurrentBooking">
       <h2 class="text-3xl font-bold text-[#c4b5fd] mb-6">Current Active Project</h2>
-      
+
       <div class="booking-card glass p-8 rounded-3xl shadow-2xl border border-[#8b5cf6]/30">
         <div class="flex justify-between items-start mb-6">
           <div>
@@ -67,7 +67,7 @@
               <i class="fas fa-calendar-alt text-[#8b5cf6]"></i> {{ currentBooking.scheduledDate }}
             </p>
           </div>
-          <div class="status-badge text-lg px-6 py-3 rounded-full font-bold" 
+          <div class="status-badge text-lg px-6 py-3 rounded-full font-bold"
                [ngClass]="getStatusClass(currentBooking.status)">
             {{ currentBooking.status }}
           </div>
@@ -98,7 +98,7 @@
 
         <!-- Action Buttons -->
         <div class="flex gap-6 justify-center">
-          <button (click)="contactTechnician()" 
+          <button (click)="contactTechnician()"
                   class="btn-primary px-10 py-5 text-xl rounded-xl flex items-center gap-3 transform hover:scale-105 transition">
             <i class="fas fa-comment-dots"></i> Chat with Technician
           </button>
@@ -118,7 +118,7 @@
         </div>
         <h3 class="text-4xl font-bold text-white mb-4">No Active Projects</h3>
         <p class="text-xl text-gray-400 mb-10">Ready to start your next construction journey?</p>
-        <a routerLink="/customer/booking" 
+        <a routerLink="/customer/booking"
            class="purple-btn text-2xl px-12 py-6 inline-flex items-center gap-4 transform hover:scale-110 transition">
           <i class="fas fa-plus-circle"></i> Book a New Service
         </a>
@@ -150,13 +150,13 @@
             <tr *ngFor="let b of bookingHistory"
                 class="hover:bg-white/5 transition cursor-pointer"
                 (click)="viewDetails(b.bookingID)">
-                
+
               <td class="font-semibold text-white">{{ b.serviceName }}</td>
               <td class="text-gray-300">{{ b.scheduledDate }}</td>
               <td>{{ b.technicianName }}</td>
               <td class="font-bold text-[#8b5cf6]">Rs. {{ b.price | number:'1.0-0' }}</td>
               <td>
-                <span class="status-badge px-5 py-2 rounded-full text-sm font-bold" 
+                <span class="status-badge px-5 py-2 rounded-full text-sm font-bold"
                       [ngClass]="getStatusClass(b.status)">
                   {{ b.status }}
                 </span>

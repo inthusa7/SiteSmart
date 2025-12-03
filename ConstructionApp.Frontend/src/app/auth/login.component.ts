@@ -5,11 +5,12 @@ import { AuthService } from '../shared/services/auth.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { NgIcon } from "@ng-icons/core";
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, NgIcon],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -32,7 +33,7 @@ export class LoginComponent {
   showPassword = false;
 
   constructor(
-    
+
     private auth: AuthService,
     private router: Router
   ) {}

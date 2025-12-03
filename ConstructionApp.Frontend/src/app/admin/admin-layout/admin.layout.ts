@@ -2,12 +2,12 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { LucideAngularModule } from "lucide-angular";
+import { NgIcon } from "@ng-icons/core";
 
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, LucideAngularModule],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, NgIcon],
   templateUrl: './admin.layout.html',
   styleUrls: ['./admin.layout.css']
 })

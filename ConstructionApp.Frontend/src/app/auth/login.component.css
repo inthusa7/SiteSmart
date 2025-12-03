@@ -59,7 +59,7 @@
   backdrop-filter: blur(20px);
   border-radius: 24px;
   border: 1px solid rgba(139, 92, 246, 0.5);
-  box-shadow: 
+  box-shadow:
     0 20px 50px rgba(0, 0, 0, 0.8),
     0 0 60px rgba(139, 92, 246, 0.25);
   text-align: center;
@@ -77,10 +77,10 @@
   /* text-fill-color removed → No warning! */
 }
 
-.login-box p { 
-  font-size: 1.05rem; 
-  opacity: 0.9; 
-  margin-bottom: 35px; 
+.login-box p {
+  font-size: 1.05rem;
+  opacity: 0.9;
+  margin-bottom: 35px;
   color: #c4b5fd;
 }
 
@@ -133,15 +133,15 @@
 
 .eye:hover { color: #c4b5fd; }
 
-.forgot a { 
-  color: #a78bfa; 
-  text-decoration: none; 
+.forgot a {
+  color: #a78bfa;
+  text-decoration: none;
   font-size: 0.95rem;
   transition: 0.3s;
 }
 
-.forgot a:hover { 
-  color: #c4b5fd; 
+.forgot a:hover {
+  color: #c4b5fd;
   text-decoration: underline;
 }
 
@@ -165,7 +165,7 @@
 
 .login-btn:hover {
   background: #8b5cf6;
-  box-shadow: 
+  box-shadow:
     0 0 40px #8b5cf6,
     0 0 80px rgba(139, 92, 246, 0.5);
   transform: translateY(-4px);
@@ -182,19 +182,19 @@
   z-index: -1;
 }
 
-.login-btn:hover span { 
-  width: 450px; 
-  height: 450px; 
+.login-btn:hover span {
+  width: 450px;
+  height: 450px;
 }
 
-.signup a { 
-  color: #a78bfa; 
-  font-weight: 700; 
+.signup a {
+  color: #a78bfa;
+  font-weight: 700;
   text-decoration: underline;
 }
 
-.signup a:hover { 
-  color: #c4b5fd; 
+.signup a:hover {
+  color: #c4b5fd;
 }
 
 .error-message {

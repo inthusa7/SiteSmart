@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ConstructionApp.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9dbc85034794348769378ff05f23fc71ef1a9c07")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+df2321294ff8c265825d00f8a7c95218f1846f87")]
 [assembly: System.Reflection.AssemblyProductAttribute("ConstructionApp.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ConstructionApp.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

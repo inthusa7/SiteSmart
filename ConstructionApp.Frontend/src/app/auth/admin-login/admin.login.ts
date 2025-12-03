@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Eye, EyeOff, LucideAngularModule } from 'lucide-angular';
+import { NgIcon } from "@ng-icons/core";
 
 @Component({
   selector: 'app-admin-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule],
+  imports: [CommonModule, FormsModule, RouterModule, NgIcon],
   templateUrl: './admin.login.html',
   styleUrls: ['./admin.login.css']
 })
@@ -20,7 +20,6 @@ export class AdminLoginComponent {
   error = '';
   currentYear = new Date().getFullYear();
 
-  // உங்க Backend URL (CORS allow பண்ணிருக்கீங்கன்னா work ஆகும்)
   private apiUrl = 'http://localhost:5035/api/auth/admin-login';
 
   constructor(
@@ -88,8 +87,8 @@ export class AdminLoginComponent {
     });
   }
 
-  // Icon getter
-  get eyeIcon() {
-    return this.showPassword ? EyeOff : Eye;
-  }
+  // // Icon getter
+  // get eyeIcon() {
+  //   return this.showPassword ? EyeOff : Eye;
+  // }
 }

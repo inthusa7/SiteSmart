@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AdminDashboardService, BookingTrends, DashboardStats, RecentActivity } from '../shared/services/admin-dashboard.service';
 import { LucideAngularModule } from "lucide-angular";
+import { NgIcon } from "@ng-icons/core";
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, LucideAngularModule],
+  imports: [CommonModule, RouterModule, LucideAngularModule, NgIcon],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
