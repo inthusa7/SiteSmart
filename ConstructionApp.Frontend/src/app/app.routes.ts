@@ -32,6 +32,7 @@ import { BookingComponent } from './customer/booking/booking.component';
 
 // Technician
 import { TechnicianVerifyDocComponent } from './technician/verify/technician-verify-doc.component';
+import { TechnicianLoginComponent } from './auth/technician-login/technician-login.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -43,6 +44,7 @@ export const routes: Routes = [
   // Authentication
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'technician-login', component: TechnicianLoginComponent },
   { path: 'technician-register', component: RegisterComponent },
   { path: 'verify/:token', component: VerifyComponent },
   { path: 'resend-verification', component: ResendVerificationComponent },

@@ -290,6 +290,23 @@ body{ margin:0; font-family: Inter, Roboto, "Segoe UI", Arial, sans-serif; backg
 }
 .close-btn:hover { background: rgba(255,255,255,0.02); color: #fff; transform: scale(1.05); }
 
+.btn-logout {
+  margin-top: 12px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(255,122,26,0.10);
+  border: 1px solid rgba(255,122,26,0.20);
+  color: var(--accent);
+  font-weight: 700;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.btn-logout:hover {
+  background: rgba(255,122,26,0.20);
+}
+
 /* small animation */
 @keyframes popIn {
   from { transform: translateY(-8px) scale(0.995); opacity: 0; }

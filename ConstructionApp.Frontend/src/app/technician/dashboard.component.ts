@@ -14,7 +14,7 @@ import { JobsComponent } from './jobs/jobs.component';
 @Component({
   selector: 'app-technician-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, TechnicianVerifyDocComponent,ContactAboutComponent,ProfileComponent,WalletComponent,JobsComponent], // <-- fixes *ngIf / *ngFor warnings
+  imports: [CommonModule, TechnicianVerifyDocComponent,ContactAboutComponent,ProfileComponent,WalletComponent,JobsComponent], // <-- fixes *ngIf / *ngFor warnings
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
   encapsulation: ViewEncapsulation.None
@@ -42,25 +42,37 @@ export class TechnicianDashboardComponent implements OnInit {
 
   constructor(private techService: TechnicianService, private auth: AuthService) {}
 
-  ngOnInit(): void {
-    // get verification status from AuthService (if you store it there)
-    // fallback to 'Verified' for demo
-    try {
-      // If your AuthService exposes a method, use it. Otherwise default.
-      // this.verificationStatus = this.auth.getTechnicianVerificationStatus();
-      this.verificationStatus = 'Verified';
-    } catch {
-      this.verificationStatus = 'Verified';
+//   ngOnInit(): void {
+//     // get verification status from AuthService (if you store it there)
+//     // fallback to 'Verified' for demo
+//     try {
+//       // If your AuthService exposes a method, use it. Otherwise default.
+//       // this.verificationStatus = this.auth.getTechnicianVerificationStatus();
+//       this.verificationStatus = 'Verified';
+//     } catch {
+//       this.verificationStatus = 'Verified';
+//     }
+
+//     this.setupMockData();
+//     // optionally call API:
+//     // this.loadJobs();
+
+// // 01.12.2025
+//     this.loadTechnicianDetails();
+//     this.loadDashboardData();
+//   }
+
+ngOnInit() {
+  this.auth.currentUser$.subscribe(user => {
+    if (user) {
+      this.profileName = user.fullName;
+      this.profileImage = user.profileImage || '/assets/avatar.png';
     }
+  });
 
-    this.setupMockData();
-    // optionally call API:
-    // this.loadJobs();
-
-// 01.12.2025
-    this.loadTechnicianDetails();
-    this.loadDashboardData();
-  }
+  this.loadTechnicianDetails();
+  this.loadDashboardData();
+}
 
   private setupMockData(): void {
     this.stats = {
@@ -150,13 +162,18 @@ export class TechnicianDashboardComponent implements OnInit {
     const value = el ? el.value : '';
     if (value) this.updateStatus(bookingId, value);
   }
-  // 01.12.2025
+  // 05.12.2025
   loadTechnicianDetails() {
+  const user = this.auth.getCurrentUser();
   const tech = this.auth.getTechnician();
 
-  this.profileName = tech.fullName;
-  this.profileImage = tech.profileImage || "/assets/avatar.png";
-  this.verificationStatus = tech.verificationStatus;
+  if (user) {
+    this.profileName = user.fullName;
+    this.profileImage = user.profileImage || "/assets/avatar.png";
+  }
+
+  this.verificationStatus =
+    localStorage.getItem("technicianVerificationStatus") || "Pending";
 }
 
 uploadDocument(event: any) {
@@ -227,5 +244,10 @@ closeWalletModal() { this.showWalletModal = false; document.body.style.overflow=
 
 openJobsModal() { this.showJobsModal = true; document.body.style.overflow = 'hidden'; }
 closeJobsModal() { this.showJobsModal = false; document.body.style.overflow = ''; }
+logout() {
+  this.auth.logout();
 }
+
+}
+
 

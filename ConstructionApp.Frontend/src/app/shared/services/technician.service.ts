@@ -1,83 +1,119 @@
-// src/app/technician/technician.service.ts
+// src/app/shared/services/technician.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { AuthService } from './auth.service';
 
 export type UpdateStatusPayload = { status: string };
 
-/**
- * TechnicianService - flexible signatures so current components compile
- */
 @Injectable({
   providedIn: 'root'
 })
 export class TechnicianService {
-  private apiUrl = 'https://localhost:5035.com/api'; // <- set to your backend
+  // keep base consistent with AuthService
+  private apiUrl = 'http://localhost:5035/api';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private auth: AuthService) {}
 
-  // getAssignedJobs(technicianId?) -> supports calls with or without id
+  private authHeaders(): { headers?: HttpHeaders } {
+    const token = this.auth.getToken();
+    return token ? { headers: new HttpHeaders({ Authorization: `Bearer ${token}` }) } : {};
+  }
+
+  // Assigned jobs (supports /technicians/me/jobs or /technicians/{id}/jobs)
   getAssignedJobs(technicianId?: number): Observable<any> {
-    if (typeof technicianId === 'number') {
-      return this.http.get(`${this.apiUrl}/technicians/${technicianId}/jobs`);
-    }
-    return this.http.get(`${this.apiUrl}/technicians/me/jobs`);
+    const url = typeof technicianId === 'number'
+      ? `${this.apiUrl}/technicians/${technicianId}/jobs`
+      : `${this.apiUrl}/technicians/me/jobs`;
+
+    return this.http.get(url, this.authHeaders());
   }
 
-  // getDashboard(technicianId?) -> supports calls with or without id
+  // Dashboard (supports /technicians/me/dashboard or /technicians/{id}/dashboard)
   getDashboard(technicianId?: number): Observable<any> {
-    if (typeof technicianId === 'number') {
-      return this.http.get(`${this.apiUrl}/technicians/${technicianId}/dashboard`);
-    }
-    return this.http.get(`${this.apiUrl}/technicians/me/dashboard`);
+    const url = typeof technicianId === 'number'
+      ? `${this.apiUrl}/technicians/${technicianId}/dashboard`
+      : `${this.apiUrl}/technicians/me/dashboard`;
+
+    return this.http.get(url, this.authHeaders());
   }
 
   /**
-   * uploadDocument: flexible call handling
-   * Preferred usage: uploadDocument(technicianId: number, formData: FormData)
-   * But this will also accept uploadDocument(formData) if you ever accidentally pass only FormData.
+   * uploadDocument
+   * Preferred: uploadDocument(technicianId: number, formData: FormData)
+   * Or: uploadDocument(formData: FormData) -> uses /technicians/me/documents
    */
-  uploadDocument(arg1: number | FormData, arg2?: FormData): Observable<any> {
-    let technicianId: number | undefined;
-    let formData: FormData | undefined;
-
-    if (arg1 instanceof FormData) {
-      // called as uploadDocument(formData)
-      formData = arg1 as FormData;
-    } else {
-      technicianId = arg1 as number;
-      formData = arg2;
-    }
-
-    if (!formData) {
-      throw new Error('uploadDocument requires a FormData (and ideally a technicianId).');
-    }
-
-    const target = typeof technicianId === 'number'
-      ? `${this.apiUrl}/technicians/${technicianId}/documents`
-      : `${this.apiUrl}/technicians/me/documents`;
-
-    return this.http.post(target, formData);
+  // --- uploadDocument: send only FormData, backend reads user from JWT ---
+  uploadDocument(formData: FormData): Observable<any> {
+    const token = this.auth.getToken();
+    return this.http.post(`${this.apiUrl}/technician/upload-document`, formData, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
   }
 
-  /**
-   * Accept job (example)
-   */
+
+  // Accept job example
   acceptJob(bookingId: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/bookings/${bookingId}/accept`, {});
+    const url = `${this.apiUrl}/bookings/${bookingId}/accept`;
+    return this.http.post(url, {}, this.authHeaders());
   }
 
-  /**
-   * updateStatus accepts either a string status or an object {status:string}
-   * so both `updateStatus(id, 'Done')` and `updateStatus(id, {status: 'Done'})` compile.
-   */
+  // Update booking status
   updateStatus(bookingId: number, statusOrPayload: string | UpdateStatusPayload): Observable<any> {
     const payload: UpdateStatusPayload =
       typeof statusOrPayload === 'string' ? { status: statusOrPayload } : statusOrPayload;
-    return this.http.put(`${this.apiUrl}/bookings/${bookingId}/status`, payload);
+    const url = `${this.apiUrl}/bookings/${bookingId}/status`;
+    return this.http.put(url, payload, this.authHeaders());
   }
-  getCategories() {
-  return this.http.get<string[]>(`${this.apiUrl}/admin/categories`);
+
+  // list categories (admin/public endpoint)
+  getCategories(): Observable<string[]> {
+    const url = `${this.apiUrl}/admin/categories`;
+    return this.http.get<string[]>(url, this.authHeaders());
+  }
+
+  // optional helpers used elsewhere
+  getVerifyDetails(): Observable<any> {
+    const token = this.auth.getToken();
+    return this.http.get(`${this.apiUrl}/technician/verify-details`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+  uploadVerification(params: {
+  nicFile?: File | null;
+  certificateFile?: File | null;
+  street?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  country?: string;
+  experienceYears?: number | null;
+  categories?: string[]; // names
+}): Observable<any> {
+  const fd = new FormData();
+  if (params.nicFile) fd.append('nic', params.nicFile, params.nicFile.name);
+  if (params.certificateFile) fd.append('certificate', params.certificateFile, params.certificateFile.name);
+
+  if (params.street) fd.append('street', params.street);
+  if (params.city) fd.append('city', params.city);
+  if (params.state) fd.append('state', params.state);
+  if (params.postalCode) fd.append('postalCode', params.postalCode);
+  if (params.country) fd.append('country', params.country);
+
+  if (params.experienceYears !== undefined && params.experienceYears !== null) {
+    fd.append('experienceYears', String(params.experienceYears));
+  }
+
+  if (params.categories && params.categories.length > 0) {
+    // server accepts 'categories' JSON string (we made controller accept both)
+    fd.append('categories', JSON.stringify(params.categories));
+  }
+
+  const token = this.auth.getToken();
+  const headers: any = {};
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
+  return this.http.post(`${this.apiUrl}/technician/upload-document`, fd, { headers });
 }
 
 }

@@ -19,41 +19,80 @@
       <!-- Right: form -->
       <div class="form-col">
         <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+
+          <!-- Full Name -->
           <div class="field">
             <label>Full Name</label>
             <input class="input" formControlName="fullName" placeholder="Your full name" />
             <div class="error" *ngIf="fullName?.touched && fullName?.invalid">Full name is required.</div>
           </div>
 
+          <!-- Email -->
           <div class="field">
             <label>Email Address</label>
             <input class="input" formControlName="email" placeholder="you@example.com" />
             <div class="error" *ngIf="email?.touched && email?.invalid">Valid email required.</div>
           </div>
 
+          <!-- Phone -->
           <div class="field">
             <label>Phone Number</label>
             <input class="input" formControlName="phone" placeholder="+94 77 123 4567" />
             <div class="error" *ngIf="phone?.touched && phone?.invalid">Phone is required.</div>
           </div>
 
-          <div class="field">
-            <label>Address</label>
-            <input class="input" formControlName="address" placeholder="Your address" />
+          <!-- Address Toggle -->
+          <div class="pw-toggle-row">
+            <button type="button" class="pw-toggle" (click)="toggleAddressSection()">
+              {{ showAddressSection ? 'Hide Address Fields' : 'Add / Edit Address' }}
+            </button>
+          </div>
+
+          <!-- Collapsible Address Section -->
+          <div class="pw-collapse" [class.open]="showAddressSection" [attr.aria-hidden]="!showAddressSection">
+            <div formGroupName="address">
+
+              <div class="field">
+                <label>Street</label>
+                <input class="input" formControlName="street" placeholder="No.01, Main Street" />
+              </div>
+
+              <div class="field">
+                <label>City</label>
+                <input class="input" formControlName="city" placeholder="Jaffna" />
+              </div>
+
+              <div class="field">
+                <label>State / Province</label>
+                <input class="input" formControlName="state" placeholder="Northern" />
+              </div>
+
+              <div class="field">
+                <label>Postal Code</label>
+                <input class="input" formControlName="postalCode" placeholder="Postal Code" />
+              </div>
+
+              <div class="field">
+                <label>Country</label>
+                <input class="input" formControlName="country" placeholder="Sri Lanka" />
+              </div>
+
+            </div>
           </div>
 
           <div class="divider"></div>
 
-          <!-- Toggle button for password section -->
+          <!-- Password Section Toggle -->
           <div class="pw-toggle-row">
             <button type="button" class="pw-toggle" (click)="togglePasswordSection()">
               {{ showPasswordSection ? 'Hide password fields' : 'Change password' }}
             </button>
           </div>
 
-          <!-- Collapsible password area -->
+          <!-- Collapsible Password Section -->
           <div class="pw-collapse" [class.open]="showPasswordSection" [attr.aria-hidden]="!showPasswordSection">
             <div [formGroup]="passwordGroup">
+
               <div class="field">
                 <label>Current Password</label>
                 <input class="input" type="password" formControlName="currentPassword" placeholder="Current password" />
@@ -62,23 +101,31 @@
               <div class="field">
                 <label>New Password</label>
                 <input class="input" type="password" formControlName="newPassword" placeholder="New password (min 6 chars)" />
-                <div class="error" *ngIf="newPassword?.touched && newPassword?.invalid">New password must be at least 6 characters.</div>
+                <div class="error" *ngIf="newPassword?.touched && newPassword?.invalid">
+                  New password must be at least 6 characters.
+                </div>
               </div>
 
               <div class="field">
                 <label>Confirm New Password</label>
                 <input class="input" type="password" formControlName="confirmPassword" placeholder="Confirm new password" />
-                <div class="error" *ngIf="profileForm.get('passwordGroup')?.errors?.['mismatch']">Passwords do not match.</div>
+                <div class="error" *ngIf="profileForm.get('passwordGroup')?.errors?.['mismatch']">
+                  Passwords do not match.
+                </div>
               </div>
+
             </div>
           </div>
 
           <div class="actions">
-            <button type="button" class="btn-secondary" (click)="resetForm()" [disabled]="submitting">Reset</button>
+            <button type="button" class="btn-secondary" (click)="resetForm()" [disabled]="submitting">
+              Reset
+            </button>
             <button type="submit" class="btn-primary" [disabled]="submitting">
               {{ submitting ? 'Saving...' : 'Save Changes' }}
             </button>
           </div>
+
         </form>
       </div>
     </div>

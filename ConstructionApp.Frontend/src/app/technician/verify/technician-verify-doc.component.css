@@ -182,6 +182,14 @@ input[type="file"] { display: none; }
   cursor: not-allowed;
   box-shadow: none;
 }
+.section-heading {
+  margin-top: 20px;
+  margin-bottom: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333; /* adjust to match theme */
+}
+
 
 /* responsive */
 @media (max-width: 640px) {
