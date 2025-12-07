@@ -1,0 +1,76 @@
+<div class="page-wrapper">
+  <div class="page-header">
+
+    <div>
+      <h1>Notifications</h1>
+      <p>
+        All updates related to your bookings and account.
+        <span *ngIf="unreadCount > 0">You have {{ unreadCount }} unread.</span>
+      </p>
+    </div>
+
+     <div class="header-actions">
+      <button class="btn-back" (click)="goToDashboard()">
+        ← Back to Dashboard
+      </button>
+
+    <button class="badge-toggle" (click)="toggleUnreadOnly()">
+      <span *ngIf="showUnreadOnly">Show All</span>
+      <span *ngIf="!showUnreadOnly">Show Unread Only</span>
+    </button>
+  </div>
+
+  <div class="card">
+    <div class="card-header-row">
+      <div class="card-title">Your Notifications</div>
+    </div>
+
+    <div class="card-body">
+      <div *ngIf="loading" class="state">Loading notifications...</div>
+      <div *ngIf="error" class="state error">{{ error }}</div>
+
+      <div *ngIf="!loading && !error && items.length === 0" class="state">
+        No notifications found.
+      </div>
+
+      <div class="notif-list" *ngIf="!loading && !error && items.length > 0">
+        <div
+          class="notif-item"
+          *ngFor="let n of items"
+          [class.read]="n.isRead"
+        >
+          <div class="notif-header">
+            <div class="notif-title">
+              {{ n.title }}
+            </div>
+            <div class="notif-meta">
+              <span class="badge">{{ formatTargetCategory(n.category) }}</span>
+              <span class="time">{{ n.createdAt + 'Z' | date : 'short' }}</span>
+            </div>
+          </div>
+
+          <div class="notif-message">
+            {{ n.message }}
+          </div>
+
+          <div class="notif-footer">
+            <span class="status-text" *ngIf="n.isRead; else unreadTpl">
+              Read {{ n.readAt ? ('on ' + (n.readAt | date : 'short')) : '' }}
+            </span>
+            <ng-template #unreadTpl>
+              <span class="status-text unread">Unread</span>
+            </ng-template>
+
+            <button
+              class="btn-mark"
+              *ngIf="!n.isRead"
+              (click)="markRead(n)"
+            >
+              Mark as Read
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

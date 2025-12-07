@@ -1,18 +1,19 @@
-
 // src/app/admin/booking/admin-bookings.component.ts
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { environment } from '../../../environments/environment';
 
 interface Booking {
   bookingID: number;
   serviceName: string;
   customerName: string;
-  technicianName?: string;
+  technicianName?: string | null;
   totalAmount: number;
   status: string;
   preferredStartDateTime: string;
+  preferredEndDateTime?: string | null;
 }
 
 @Component({
@@ -26,7 +27,7 @@ export class AdminBookingsComponent implements OnInit {
   bookings: Booking[] = [];
   searchTerm = '';
 
-  private apiUrl = 'http://localhost:5035/api/bookings/admin/all'; // Admin endpoint
+  private apiUrl = (environment.apiBaseUrl || '').replace(/\/$/, '') + '/bookings/admin/all';
 
   constructor(private http: HttpClient) {}
 
@@ -35,8 +36,14 @@ export class AdminBookingsComponent implements OnInit {
   }
 
   loadBookings() {
-    this.http.get<any>(this.apiUrl).subscribe(res => {
-      this.bookings = res.data || [];
+    this.http.get<any>(this.apiUrl).subscribe({
+      next: res => {
+        this.bookings = res?.data || [];
+      },
+      error: err => {
+        console.error('Failed to load bookings', err);
+        this.bookings = [];
+      }
     });
   }
 
@@ -46,7 +53,7 @@ export class AdminBookingsComponent implements OnInit {
     return this.bookings.filter(b =>
       b.serviceName.toLowerCase().includes(term) ||
       b.customerName.toLowerCase().includes(term) ||
-      b.technicianName?.toLowerCase().includes(term)
+      (b.technicianName || '').toLowerCase().includes(term)
     );
   }
 }

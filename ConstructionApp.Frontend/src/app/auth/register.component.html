@@ -48,7 +48,7 @@
                (input)="updatePasswordStrength()">
         <label>Password</label>
         <span class="eye" (click)="showPassword = !showPassword">
-          <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+        <ng-icon class="w-5 h-5" [name]="showPassword ? 'lucideEyeOff' : 'lucideEye'"> </ng-icon>
         </span>
       </div>
 

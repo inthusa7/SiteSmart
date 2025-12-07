@@ -1,0 +1,350 @@
+/* === ROOT LAYOUT – same as your services page === */
+:host {
+  display: block;
+  padding: 24px;
+  background: #050b18;
+  color: #f5f7fa;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+.page-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 18px;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.page-header p {
+  margin: 4px 0 0;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+/* Primary button (reuse style) */
+.btn-primary {
+  background: #0fb59b;
+  border: none;
+  border-radius: 999px;
+  padding: 9px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #02111d;
+  cursor: pointer;
+  transition: transform 0.05s ease, box-shadow 0.1s ease, background 0.1s ease;
+}
+
+.btn-primary:hover {
+  background: #10c7ac;
+  box-shadow: 0 8px 20px rgba(16, 199, 172, 0.35);
+  transform: translateY(-1px);
+}
+
+/* === NOTIFICATION PAGE LAYOUT === */
+
+/* Two column layout: left = form, right = list */
+.notif-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.6fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+/* Card – shared container look */
+.card {
+  background: #0b1624;
+  border-radius: 18px;
+  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.35);
+  border: 1px solid #111827;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Card title line */
+.card-title {
+  margin: 0;
+  padding: 14px 20px 10px;
+  font-size: 16px;
+  font-weight: 600;
+  border-bottom: 1px solid #1f2933;
+}
+
+/* Inner body padding */
+.notif-form-body {
+  padding: 14px 20px 18px;
+}
+
+.notif-list-body {
+  padding: 10px 20px 14px;
+  display: flex;
+  flex-direction: column;
+  min-height: 260px;
+}
+
+/* Form fields inside left card */
+.form-group {
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-group label {
+  font-size: 13px;
+  color: #cbd5f5;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  background: #030712;
+  border-radius: 999px;
+  border: 1px solid #1f2933;
+  padding: 9px 14px;
+  font-size: 13px;
+  color: #e5e7eb;
+  outline: none;
+}
+
+.form-group textarea {
+  border-radius: 14px;
+  min-height: 100px;
+  resize: vertical;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #6b7280;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: #0fb59b;
+  box-shadow: 0 0 0 1px rgba(15, 181, 155, 0.45);
+}
+
+.req {
+  color: #f97373;
+}
+
+/* Actions under form */
+.actions-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+/* Secondary subtle button */
+.btn-subtle {
+  background: transparent;
+  border-radius: 999px;
+  border: 1px solid #374151;
+  color: #e5e7eb;
+  padding: 7px 16px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn-subtle:hover {
+  border-color: #0fb59b;
+}
+
+/* Status message under form */
+.status {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #22c55e;
+}
+
+/* Right side tabs (All / Bookings / User Activities) */
+.tabs {
+  display: flex;
+  gap: 14px;
+  margin: 0 20px 10px;
+  padding-top: 6px;
+  border-bottom: 1px solid #1f2933;
+}
+
+.tab {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  padding: 8px 0;
+  cursor: pointer;
+  font-size: 13px;
+  position: relative;
+}
+
+.tab.active {
+  color: #f9fafb;
+}
+
+.tab.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 3px;
+  border-radius: 999px 999px 0 0;
+  background: #0fb59b;
+}
+
+/* List states */
+.loading,
+.list-loading,
+.empty-state,
+.list-error {
+  padding: 12px 0;
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+.list-error {
+  color: #fecaca;
+}
+
+/* Notification list container */
+.notif-list {
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 360px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Single notification card inside the list */
+.notif-item {
+  background: #020617;
+  border-radius: 12px;
+  border: 1px solid #111827;
+  padding: 10px 12px;
+  transition: border-color 0.12s ease, background 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.notif-item:hover {
+  border-color: #0fb59b;
+  background: #02091a;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
+}
+
+/* Header line → title + meta (time + category) */
+.notif-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.notif-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f9fafb;
+}
+
+.notif-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* Category chip */
+.badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 181, 155, 0.6);
+  background: rgba(15, 181, 155, 0.12);
+  color: #a7f3d0;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+}
+
+.time {
+  font-size: 11px;
+}
+
+/* Message text */
+.notif-message {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #e5e7eb;
+}
+
+/* Target info small text */
+.notif-target {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+/* Pagination (bottom right) – same vibe as services */
+.pager {
+  margin-top: 8px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.pager button {
+  min-width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid #1f2933;
+  background: #020617;
+  color: #e5e7eb;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.pager button:hover:not(:disabled) {
+  border-color: #0fb59b;
+}
+
+.pager button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Simple alert style (if you want error/success banners) */
+.alert {
+  padding: 8px 14px;
+  font-size: 13px;
+  border-radius: 999px;
+  margin: 0 0 10px;
+}
+
+.alert-error {
+  background: rgba(220, 38, 38, 0.15);
+  border: 1px solid rgba(248, 113, 113, 0.6);
+  color: #fecaca;
+}
+
+/* Small responsive tweak */
+@media (max-width: 900px) {
+  .notif-grid {
+    grid-template-columns: 1fr;
+  }
+}

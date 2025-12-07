@@ -4,11 +4,12 @@ import { FormBuilder, Validators, ReactiveFormsModule, AbstractControl, Validati
 import { AuthService, AuthResponse } from '../shared/services/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { NgIcon } from "@ng-icons/core";
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, NgIcon],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })
@@ -38,7 +39,7 @@ export class RegisterComponent {
         this.isTechnicianRegister = true;
       }
     });
-    
+
     this.registerForm = this.fb.group({
       fullName: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],

@@ -1,36 +1,42 @@
-<div class="p-8">
-  <h2 class="text-4xl font-bold text-white mb-8">All Bookings (Admin View)</h2>
+<!-- src/app/admin/booking/admin-bookings.component.html -->
+<div class="page-wrapper">
+  <div class="page-header">
+    <h1>Bookings</h1>
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      placeholder="Search by service, customer, technician..."
+    />
+  </div>
 
-  <input [(ngModel)]="searchTerm" placeholder="Search all bookings..." class="w-96 p-4 mb-8 rounded-lg bg-gray-800 text-white">
-
-  <div class="bg-gray-800 rounded-2xl overflow-hidden">
-    <table class="w-full">
-      <thead class="bg-gray-900/50">
+  <div class="card">
+    <table class="bookings-table" *ngIf="filteredBookings.length; else emptyTpl">
+      <thead>
         <tr>
-          <th class="px-8 py-6 text-left">ID</th>
-          <th class="px-8 py-6 text-left">Service</th>
-          <th class="px-8 py-6 text-left">Customer</th>
-          <th class="px-8 py-6 text-left">Technician</th>
-          <th class="px-8 py-6 text-left">Price</th>
-          <th class="px-8 py-6 text-center">Status</th>
+          <th>ID</th>
+          <th>Service</th>
+          <th>Customer</th>
+          <th>Technician</th>
+          <th>Status</th>
+          <th>Amount</th>
+          <th>Preferred Start</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let b of filteredBookings" class="hover:bg-gray-700/50">
-          <td class="px-8 py-6">#{{ b.bookingID }}</td>
-          <td class="px-8 py-6 font-medium text-teal-400">{{ b.serviceName }}</td>
-          <td class="px-8 py-6">{{ b.customerName }}</td>
-          <td class="px-8 py-6">{{ b.technicianName || 'Not Assigned' }}</td>
-          <td class="px-8 py-6 text-teal-400 font-bold">₹{{ b.totalAmount }}</td>
-          <td class="px-8 py-6 text-center">
-            <span class="px-4 py-2 rounded-full text-sm font-medium"
-                  [class.bg-green-900]="b.status === 'Completed'"
-                  [class.bg-yellow-900]="b.status === 'Pending'">
-              {{ b.status }}
-            </span>
-          </td>
+        <tr *ngFor="let b of filteredBookings">
+          <td>{{ b.bookingID }}</td>
+          <td>{{ b.serviceName }}</td>
+          <td>{{ b.customerName }}</td>
+          <td>{{ b.technicianName || '-' }}</td>
+          <td>{{ b.status }}</td>
+          <td>{{ b.totalAmount | currency:'LKR':'symbol' }}</td>
+          <td>{{ b.preferredStartDateTime | date:'short' }}</td>
         </tr>
       </tbody>
     </table>
+
+    <ng-template #emptyTpl>
+      <div class="empty-state">No bookings found.</div>
+    </ng-template>
   </div>
 </div>

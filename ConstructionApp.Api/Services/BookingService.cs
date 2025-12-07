@@ -6,6 +6,7 @@ using ConstructionApp.Api.Exceptions;
 using ConstructionApp.Api.Helpers;
 using ConstructionApp.Api.Models;
 using ConstructionApp.Api.Repositories.Interfaces;
+using ConstructionApp.Api.System;
 using Microsoft.AspNetCore.Http;
 
 namespace ConstructionApp.Api.Services;
@@ -17,19 +18,23 @@ public class BookingService
     private readonly IMapper _mapper;
     private readonly IHttpContextAccessor _httpContext;
     private readonly IWebHostEnvironment _env;
+    private readonly SystemNotifier _notifier;
+
 
     public BookingService(
         IBookingRepository bookingRepo,
         IServiceRepository serviceRepo,
         IMapper mapper,
         IHttpContextAccessor httpContext,
-        IWebHostEnvironment env)
+        IWebHostEnvironment env,
+        SystemNotifier notifier)
     {
         _bookingRepo = bookingRepo;
         _serviceRepo = serviceRepo;
         _mapper = mapper;
         _httpContext = httpContext;
         _env = env;
+        _notifier = notifier;
     }
 
     private int CurrentUserId => int.Parse(_httpContext.HttpContext!.User
@@ -63,6 +68,7 @@ public class BookingService
 
         var created = await _bookingRepo.AddAsync(booking);
         
+       // await _notifier.NotifyCustomerBooking(customerId, created.BookingID);
         // This will NEVER be null → AddAsync returns the entity
         return _mapper.Map<BookingDto>(created)!;
     }

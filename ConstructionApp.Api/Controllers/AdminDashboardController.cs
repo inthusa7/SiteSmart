@@ -1,14 +1,16 @@
+// Controllers/AdminDashboardController.cs
 using ConstructionApp.Api.Services;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ConstructionApp.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/admin/dashboard")]
     [ApiController]
+    [Authorize(Roles = "Admin,SuperAdmin")]
     public class AdminDashboardController : ControllerBase
     {
-         private readonly AdminDashboardService _service;
+        private readonly AdminDashboardService _service;
 
         public AdminDashboardController(AdminDashboardService service)
         {

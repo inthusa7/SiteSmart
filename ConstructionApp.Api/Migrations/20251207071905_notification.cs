@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ConstructionApp.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class NewUpdate : Migration
+    public partial class notification : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -27,6 +27,26 @@ namespace ConstructionApp.Api.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categories", x => x.CategoryID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    NotificationID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Category = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TargetType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TargetRole = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TargetUserID = table.Column<int>(type: "int", nullable: true),
+                    CreatedByAdminID = table.Column<int>(type: "int", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.NotificationID);
                 });
 
             migrationBuilder.CreateTable(
@@ -125,6 +145,34 @@ namespace ConstructionApp.Api.Migrations
                     table.PrimaryKey("PK_Admins", x => x.AdminID);
                     table.ForeignKey(
                         name: "FK_Admins_Users_UserID",
+                        column: x => x.UserID,
+                        principalTable: "Users",
+                        principalColumn: "UserID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "NotificationUser",
+                columns: table => new
+                {
+                    NotificationUserID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    NotificationID = table.Column<int>(type: "int", nullable: false),
+                    UserID = table.Column<int>(type: "int", nullable: false),
+                    IsRead = table.Column<bool>(type: "bit", nullable: false),
+                    ReadAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NotificationUser", x => x.NotificationUserID);
+                    table.ForeignKey(
+                        name: "FK_NotificationUser_Notifications_NotificationID",
+                        column: x => x.NotificationID,
+                        principalTable: "Notifications",
+                        principalColumn: "NotificationID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_NotificationUser_Users_UserID",
                         column: x => x.UserID,
                         principalTable: "Users",
                         principalColumn: "UserID",
@@ -288,6 +336,16 @@ namespace ConstructionApp.Api.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_NotificationUser_NotificationID",
+                table: "NotificationUser",
+                column: "NotificationID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NotificationUser_UserID",
+                table: "NotificationUser",
+                column: "UserID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Services_CategoryID",
                 table: "Services",
                 column: "CategoryID");
@@ -330,6 +388,9 @@ namespace ConstructionApp.Api.Migrations
                 name: "Bookings");
 
             migrationBuilder.DropTable(
+                name: "NotificationUser");
+
+            migrationBuilder.DropTable(
                 name: "TechnicianCategories");
 
             migrationBuilder.DropTable(
@@ -337,6 +398,9 @@ namespace ConstructionApp.Api.Migrations
 
             migrationBuilder.DropTable(
                 name: "Services");
+
+            migrationBuilder.DropTable(
+                name: "Notifications");
 
             migrationBuilder.DropTable(
                 name: "Technicians");

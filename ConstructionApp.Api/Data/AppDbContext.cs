@@ -17,6 +17,8 @@ namespace ConstructionApp.Api.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Address> Addresses { get; set; }       // if you have Address model
         public DbSet<TechnicianCategory> TechnicianCategories { get; set; }
+        public DbSet<Notification> Notifications {get; set;}
+        public DbSet<NotificationUser> NotificationUsers {get; set;}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -118,7 +120,7 @@ namespace ConstructionApp.Api.Data
             });
 
             // TechnicianCategory
-             modelBuilder.Entity<TechnicianCategory>()
+            modelBuilder.Entity<TechnicianCategory>()
                 .HasOne(tc => tc.Technician)
                 .WithMany(t => t.TechnicianCategories)
                 .HasForeignKey(tc => tc.TechnicianID)
@@ -129,6 +131,30 @@ namespace ConstructionApp.Api.Data
                 .WithMany(c => c.TechnicianCategories)
                 .HasForeignKey(tc => tc.CategoryID)
                 .OnDelete(DeleteBehavior.Cascade);
+       
+            // Notifications
+            modelBuilder.Entity<Notification>(entity =>
+            {
+                entity.HasKey(n => n.NotificationID);
+
+                entity.HasMany(n => n.NotificationUsers)
+                    .WithOne(nu => nu.Notification)
+                    .HasForeignKey(nu => nu.NotificationID)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // NotificationUser → map to existing table name "NotificationUser"
+            modelBuilder.Entity<NotificationUser>(entity =>
+            {
+                entity.ToTable("NotificationUser");          // 👈 VERY IMPORTANT
+                entity.HasKey(nu => nu.NotificationUserID);
+
+                entity.HasOne(nu => nu.User)
+                    .WithMany()                            // later you can add collection on User
+                    .HasForeignKey(nu => nu.UserID)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
         }
     }
 }

@@ -1,4 +1,3 @@
-
 // src/app/shared/services/admin-users.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
@@ -17,6 +16,8 @@ export interface UserListItem {
   fullName: string;
   email: string;
   phone?: string | null;
+  address?: string | null;
+  profileImage?: string | null;
   role: string;
   status?: string | null;
   createdAt?: string | null;
@@ -74,7 +75,7 @@ export class AdminUsersService {
 
     let params = new HttpParams()
       .set('page', String(page))
-      .set('size', String(pageSize)); // backend uses 'size' param (per your controller)
+      .set('size', String(pageSize)); // backend uses 'size' param
 
     if (opts.role && opts.role !== 'All') params = params.set('role', opts.role);
     if (opts.q) params = params.set('search', opts.q);
@@ -95,6 +96,8 @@ export class AdminUsersService {
             fullName: u.fullName ?? u.FullName ?? u.full_name ?? '',
             email: u.email ?? u.Email ?? '',
             phone: u.phone ?? u.Phone ?? null,
+            address: u.address ?? u.Address ?? null,
+            profileImage: u.profileImage ?? u.ProfileImage ?? null,
             role: u.role ?? u.Role ?? 'Customer',
             status: u.status ?? u.Status ?? null,
             createdAt: u.createdAt ?? u.CreatedAt ?? null,
@@ -125,6 +128,8 @@ export class AdminUsersService {
             fullName: u.fullName ?? u.FullName ?? '',
             email: u.email ?? u.Email ?? '',
             phone: u.phone ?? u.Phone ?? null,
+            profileImage: u.profileImage ?? u.ProfileImage ?? null,
+            address: u.address ?? u.Address ?? null,  // 👈 map address
             role: u.role ?? u.Role ?? 'Customer',
             status: u.status ?? u.Status ?? null,
             createdAt: u.createdAt ?? u.CreatedAt ?? null,

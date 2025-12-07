@@ -1,0 +1,190 @@
+<div class="page-wrapper">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div>
+      <h1>Notification Management</h1>
+      <p>Send and review system notifications.</p>
+    </div>
+  </div>
+
+  <!-- GRID: LEFT FORM + RIGHT LIST -->
+  <div class="notif-grid">
+
+    <!-- LEFT CARD: CREATE NOTIFICATION -->
+    <div class="card">
+      <h3 class="card-title">Send Notification</h3>
+
+      <div class="notif-form-body">
+
+        <!-- TITLE -->
+        <div class="form-group">
+          <label>Title <span class="req">*</span></label>
+          <input
+            type="text"
+            [(ngModel)]="title"
+            placeholder="Enter notification title"
+          />
+        </div>
+
+        <!-- MESSAGE -->
+        <div class="form-group">
+          <label>Message <span class="req">*</span></label>
+          <textarea
+            [(ngModel)]="message"
+            placeholder="Enter details of the notification"
+          ></textarea>
+        </div>
+
+        <!-- CATEGORY -->
+        <div class="form-group">
+          <label>Category (optional)</label>
+          <select [(ngModel)]="category">
+            <option [ngValue]="null">None</option>
+            <option value="Booking">Booking</option>
+            <option value="UserActivity">User Activity</option>
+            <option value="System">System</option>
+          </select>
+        </div>
+
+        <!-- TARGET -->
+        <div class="form-group">
+          <label>Target</label>
+          <select [(ngModel)]="targetType">
+            <option value="All">All Users</option>
+            <option value="Role">By Role</option>
+            <option value="User">Specific User</option>
+          </select>
+        </div>
+
+        <!-- TARGET ROLE -->
+        <div class="form-group" *ngIf="targetType === 'Role'">
+          <label>Select Role</label>
+          <select [(ngModel)]="targetRole">
+            <option [ngValue]="null">Choose role</option>
+            <option value="Customer">Customers</option>
+            <option value="Technician">Technicians</option>
+            <option value="Admin">Admins</option>
+          </select>
+        </div>
+
+        <!-- TARGET USER -->
+        <div class="form-group" *ngIf="targetType === 'User'">
+          <label>Target User ID</label>
+          <input
+            type="number"
+            [(ngModel)]="targetUserId"
+            placeholder="Enter user ID"
+          />
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="actions-row">
+          <button class="btn-subtle" type="button" (click)="clearForm()">Clear</button>
+          <button
+            class="btn-primary"
+            type="button"
+            [disabled]="submitting"
+            (click)="sendNotification()"
+          >
+            {{ submitting ? 'Sending...' : 'Send Notification' }}
+          </button>
+        </div>
+
+        <!-- STATUS -->
+        <div class="status" *ngIf="statusMsg">{{ statusMsg }}</div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT CARD: NOTIFICATION LIST -->
+    <div class="card">
+      <h3 class="card-title">Notifications</h3>
+
+      <!-- TABS -->
+      <div class="tabs">
+        <button
+          class="tab"
+          [class.active]="activeTab === 'All'"
+          (click)="changeTab('All')"
+        >
+          All
+        </button>
+
+        <button
+          class="tab"
+          [class.active]="activeTab === 'Booking'"
+          (click)="changeTab('Booking')"
+        >
+          Bookings
+        </button>
+
+        <button
+          class="tab"
+          [class.active]="activeTab === 'UserActivity'"
+          (click)="changeTab('UserActivity')"
+        >
+          User Activities
+        </button>
+      </div>
+
+      <div class="notif-list-body">
+
+        <!-- LOADING -->
+        <div *ngIf="loadingList" class="loading">
+          Loading notifications...
+        </div>
+
+        <!-- ERROR -->
+        <div *ngIf="listError" class="alert alert-error">
+          {{ listError }}
+        </div>
+
+        <!-- LIST -->
+        <div class="notif-list" *ngIf="!loadingList && !listError">
+
+          <!-- EMPTY -->
+          <div *ngIf="notifications.length === 0" class="empty-state">
+            No notifications found.
+          </div>
+
+          <!-- ITEM -->
+          <div *ngFor="let n of notifications" class="notif-item">
+            <div class="notif-header">
+              <div class="notif-title">{{ n.title }}</div>
+
+              <div class="notif-meta">
+                <span class="badge" *ngIf="n.category">{{ n.category }}</span>
+                <span class="time">{{ n.createdAt + 'Z' | date : 'short' }}</span>
+              </div>
+            </div>
+
+            <div class="notif-message">{{ n.message }}</div>
+
+            <div class="notif-target">
+              <small>
+                Target:
+                <ng-container [ngSwitch]="n.targetType">
+                  <span *ngSwitchCase="'All'">All Users</span>
+                  <span *ngSwitchCase="'Role'">Role: {{ n.targetRole }}</span>
+                  <span *ngSwitchCase="'User'">User ID: {{ n.targetUserID }}</span>
+                  <span *ngSwitchDefault>Unknown</span>
+                </ng-container>
+              </small>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="pager" *ngIf="totalPages > 1">
+          <button (click)="prevPage()" [disabled]="page <= 1">‹</button>
+          <span>Page {{ page }} / {{ totalPages }}</span>
+          <button (click)="nextPage()" [disabled]="page >= totalPages">›</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>

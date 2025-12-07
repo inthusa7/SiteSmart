@@ -230,6 +230,74 @@ namespace ConstructionApp.Api.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("ConstructionApp.Api.Models.Notification", b =>
+                {
+                    b.Property<int>("NotificationID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NotificationID"));
+
+                    b.Property<string>("Category")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CreatedByAdminID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TargetRole")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TargetType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TargetUserID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("NotificationID");
+
+                    b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("ConstructionApp.Api.Models.NotificationUser", b =>
+                {
+                    b.Property<int>("NotificationUserID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NotificationUserID"));
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("NotificationID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("NotificationUserID");
+
+                    b.HasIndex("NotificationID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("NotificationUser", (string)null);
+                });
+
             modelBuilder.Entity("ConstructionApp.Api.Models.Service", b =>
                 {
                     b.Property<int>("ServiceID")
@@ -433,7 +501,7 @@ namespace ConstructionApp.Api.Migrations
             modelBuilder.Entity("ConstructionApp.Api.Models.Address", b =>
                 {
                     b.HasOne("ConstructionApp.Api.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Addresses")
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -486,6 +554,25 @@ namespace ConstructionApp.Api.Migrations
                     b.Navigation("Service");
 
                     b.Navigation("Technician");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ConstructionApp.Api.Models.NotificationUser", b =>
+                {
+                    b.HasOne("ConstructionApp.Api.Models.Notification", "Notification")
+                        .WithMany("NotificationUsers")
+                        .HasForeignKey("NotificationID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ConstructionApp.Api.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Notification");
 
                     b.Navigation("User");
                 });
@@ -543,6 +630,11 @@ namespace ConstructionApp.Api.Migrations
                     b.Navigation("TechnicianCategories");
                 });
 
+            modelBuilder.Entity("ConstructionApp.Api.Models.Notification", b =>
+                {
+                    b.Navigation("NotificationUsers");
+                });
+
             modelBuilder.Entity("ConstructionApp.Api.Models.Service", b =>
                 {
                     b.Navigation("Bookings");
@@ -557,6 +649,8 @@ namespace ConstructionApp.Api.Migrations
 
             modelBuilder.Entity("ConstructionApp.Api.Models.User", b =>
                 {
+                    b.Navigation("Addresses");
+
                     b.Navigation("Admin");
 
                     b.Navigation("CustomerBookings");

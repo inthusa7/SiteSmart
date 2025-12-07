@@ -1,4 +1,3 @@
-
 // Controllers/AdminUsersController.cs
 using System;
 using System.Linq;
@@ -8,13 +7,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ConstructionApp.Api.Data;
 
-
 namespace ConstructionApp.Api.Controllers
 {
     [ApiController]
     [Route("api/admin/users")]
     [Authorize(Roles = "Admin,SuperAdmin")]
-   // [AllowAnonymous]  
+    // [AllowAnonymous]
     public class AdminUsersController : ControllerBase
     {
         private readonly AppDbContext _db;
@@ -46,13 +44,16 @@ namespace ConstructionApp.Api.Controllers
                 .AsNoTracking()
                 .Include(u => u.Technician)
                 .Include(u => u.Admin)
+                .Include(u => u.Addresses) // 👈 include addresses
                 .AsQueryable();
 
+            // role filter
             if (!string.Equals(role, "All", StringComparison.OrdinalIgnoreCase))
             {
                 q = q.Where(u => u.Role == role);
             }
 
+            // search by name / email / phone
             if (!string.IsNullOrWhiteSpace(search))
             {
                 var s = search.Trim();
@@ -75,10 +76,24 @@ namespace ConstructionApp.Api.Controllers
                     u.FullName,
                     u.Email,
                     u.Phone,
+                    ProfileImage = u.ProfileImage,
+
+                    // 👇 flatten default/latest address to single string
+                    Address = u.Addresses
+                        .OrderByDescending(a => a.IsDefault)
+                        .ThenByDescending(a => a.AddressID)
+                        .Select(a =>
+                            a.Street + ", " +
+                            a.City + " " +
+                            a.PostalCode + ", " +
+                            a.Country)
+                        .FirstOrDefault(),
+
                     u.Role,
                     u.Status,
                     CreatedAt = u.CreatedAt,
                     EmailConfirmed = u.EmailConfirmed,
+
                     Technician = u.Technician == null ? null : new
                     {
                         u.Technician.TechnicianID,
@@ -118,6 +133,7 @@ namespace ConstructionApp.Api.Controllers
                 .AsNoTracking()
                 .Include(x => x.Technician)
                 .Include(x => x.Admin)
+                .Include(x => x.Addresses) // 👈 include addresses here too
                 .Where(x => x.UserID == id)
                 .Select(x => new
                 {
@@ -125,11 +141,25 @@ namespace ConstructionApp.Api.Controllers
                     x.FullName,
                     x.Email,
                     x.Phone,
+                    ProfileImage = x.ProfileImage,
+
+                    // same address logic as list API
+                    Address = x.Addresses
+                        .OrderByDescending(a => a.IsDefault)
+                        .ThenByDescending(a => a.AddressID)
+                        .Select(a =>
+                            a.Street + ", " +
+                            a.City + " " +
+                            a.PostalCode + ", " +
+                            a.Country)
+                        .FirstOrDefault(),
+
                     x.Role,
                     x.Status,
                     CreatedAt = x.CreatedAt,
                     EmailConfirmed = x.EmailConfirmed,
                     VerificationToken = x.VerificationToken,
+
                     Technician = x.Technician == null ? null : new
                     {
                         x.Technician.TechnicianID,
@@ -153,10 +183,10 @@ namespace ConstructionApp.Api.Controllers
                 })
                 .FirstOrDefaultAsync();
 
-            if (u == null) return NotFound(new { success = false, message = "User not found" });
+            if (u == null)
+                return NotFound(new { success = false, message = "User not found" });
 
             return Ok(new { success = true, user = u });
         }
-
     }
 }

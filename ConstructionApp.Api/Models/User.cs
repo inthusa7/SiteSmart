@@ -46,6 +46,7 @@ namespace ConstructionApp.Api.Models
         public Technician? Technician { get; set; }
         public Admin? Admin { get; set; }
 
+        public ICollection<Address> Addresses { get; set; } = new List<Address>();
         public ICollection<Booking> CustomerBookings { get; set; } = new List<Booking>();
     }
 

@@ -5,6 +5,7 @@ import { AuthService } from '../../shared/services/auth.service';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { tap } from 'rxjs/operators';
+import { NgIcon } from "@ng-icons/core";
 
 interface AuthResponse {
   success: boolean;
@@ -17,7 +18,7 @@ interface AuthResponse {
 @Component({
   selector: 'app-technician-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, NgIcon],
   templateUrl: './technician-login.component.html',
   styleUrls: ['./technician-login.component.css'],
   encapsulation: ViewEncapsulation.None
